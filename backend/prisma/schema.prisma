@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum SubjectName {
+  AQEEDHA
+  SELF_DEVELOPMENT
+  TAFSEER
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  role         Role     @default(STUDENT)
+  mentorName   String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  progress         Progress[]
+  assignmentScores AssignmentScore[]
+  examScores       ExamScore[]
+}
+
+model Subject {
+  id        String      @id @default(uuid())
+  name      SubjectName @unique
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  classes Class[]
+}
+
+model Class {
+  id        String   @id @default(uuid())
+  title     String
+  date      DateTime
+  subjectId String
+  subject   Subject  @relation(fields: [subjectId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  progress Progress[]
+}
+
+model Progress {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  classId   String
+  class     Class    @relation(fields: [classId], references: [id])
+  isWatched Boolean  @default(false)
+  watchedAt DateTime?
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, classId])
+}
+
+model Assignment {
+  id         String   @id @default(uuid())
+  title      String
+  totalMarks Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  scores AssignmentScore[]
+}
+
+model AssignmentScore {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  score        Int
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([userId, assignmentId])
+}
+
+model Exam {
+  id         String   @id @default(uuid())
+  title      String
+  totalMarks Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  scores ExamScore[]
+}
+
+model ExamScore {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  examId    String
+  exam      Exam     @relation(fields: [examId], references: [id])
+  score     Int
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, examId])
+}
