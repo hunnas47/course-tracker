@@ -46,6 +46,7 @@ model Class {
   id        String   @id @default(uuid())
   title     String
   date      DateTime
+  sortOrder Int      @default(0)
   subjectId String
   subject   Subject  @relation(fields: [subjectId], references: [id])
   createdAt DateTime @default(now())
