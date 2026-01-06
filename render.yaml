@@ -20,7 +20,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: PORT
-        value: 10000
+        value: "10000"
 
   - type: web
     name: leap-frontend
