@@ -1,7 +1,14 @@
 import axios from 'axios';
 
+const getBaseUrl = () => {
+    const envUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!envUrl) return 'http://localhost:3000';
+    if (envUrl.startsWith('http')) return envUrl;
+    return `https://${envUrl}`;
+};
+
 const api = axios.create({
-    baseURL: (process.env.NEXT_PUBLIC_API_URL?.startsWith('http') ? process.env.NEXT_PUBLIC_API_URL : `https://${process.env.NEXT_PUBLIC_API_URL}`) || 'http://localhost:3000',
+    baseURL: getBaseUrl(),
     headers: {
         'Content-Type': 'application/json',
     },
