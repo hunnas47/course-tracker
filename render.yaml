@@ -23,7 +23,4 @@ services:
     startCommand: npm start
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: leap-backend
-          property: host
+        value: "https://leap-backend-6we3.onrender.com"
