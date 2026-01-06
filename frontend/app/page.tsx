@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Trophy, Zap, Target, Flame, Sparkles, ArrowRight, Users, Star } from 'lucide-react';
+import api from '@/lib/api';
 
 interface LeaderboardEntry {
   username: string;
@@ -20,11 +21,8 @@ export default function LandingPage() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const res = await fetch('http://localhost:3000/progress/leaderboard');
-        if (res.ok) {
-          const data = await res.json();
-          setLeaderboard(data.slice(0, 5)); // Top 5
-        }
+        const res = await api.get('/progress/leaderboard');
+        setLeaderboard(res.data.slice(0, 5)); // Top 5
       } catch (err) {
         console.log('Leaderboard fetch failed:', err);
       } finally {
@@ -132,12 +130,12 @@ export default function LandingPage() {
                     }`}
                 >
                   <div className={`w-14 h-14 rounded-full flex items-center justify-center font-bold text-xl ${entry.rank === 1
-                      ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-black'
-                      : entry.rank === 2
-                        ? 'bg-gradient-to-br from-gray-200 to-gray-400 text-black'
-                        : entry.rank === 3
-                          ? 'bg-gradient-to-br from-orange-300 to-orange-500 text-black'
-                          : 'bg-muted text-foreground'
+                    ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-black'
+                    : entry.rank === 2
+                      ? 'bg-gradient-to-br from-gray-200 to-gray-400 text-black'
+                      : entry.rank === 3
+                        ? 'bg-gradient-to-br from-orange-300 to-orange-500 text-black'
+                        : 'bg-muted text-foreground'
                     }`}>
                     {entry.rank === 1 ? '👑' : `#${entry.rank}`}
                   </div>
