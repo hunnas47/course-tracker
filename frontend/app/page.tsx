@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Trophy, Zap, Sparkles, ArrowRight, Users, Star } from 'lucide-react';
+import { Trophy, Zap, ArrowRight, Users, Star, Crown, Scroll } from 'lucide-react';
 import { SkeletonLeaderboard } from '@/components/ui/skeleton';
 import api from '@/lib/api';
 
@@ -35,119 +35,121 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen gradient-bg overflow-hidden">
-      {/* Animated background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }} />
-      </div>
+    <div className="min-h-screen bg-background overflow-hidden selection:bg-primary selection:text-primary-foreground">
 
       {/* Header */}
-      <header className="relative z-10 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-8 w-8 text-purple-400" />
-          <h1 className="text-2xl font-bold gradient-text">IHYA</h1>
+      <header className="relative z-10 px-8 py-6 flex items-center justify-between border-b border-white/5 backdrop-blur-sm bg-background/50">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-primary/10 flex items-center justify-center rounded border border-primary/20">
+            <Scroll className="h-5 w-5 text-primary" />
+          </div>
+          <h1 className="text-2xl font-serif font-bold text-white tracking-tight">IHYA</h1>
         </div>
         <Link href="/login">
-          <Button className="neon-glow rounded-full px-6">
-            Login <ArrowRight className="ml-2 h-4 w-4" />
+          <Button variant="outline" className="btn-outline rounded-none px-6 h-10 text-xs border-primary/50 text-primary hover:text-primary-foreground hover:bg-primary hover:border-primary">
+            Student Portal
           </Button>
         </Link>
       </header>
 
       {/* Hero Section */}
-      <main className="relative z-10 container mx-auto px-4 pt-16 pb-24">
+      <main className="relative z-10 container mx-auto px-4 pt-20 pb-24">
         <div className="text-center space-y-8 max-w-4xl mx-auto">
           {/* Main Heading */}
-          <h2 className="text-5xl sm:text-7xl font-black tracking-tight leading-tight">
-            <span className="gradient-text">Level Up</span>
-            <br />
-            <span className="text-foreground">Your Islamic Knowledge</span>
-          </h2>
+          <div className="space-y-4 animate-fade-in">
+            <div className="inline-block px-3 py-1 mb-4 border border-primary/30 rounded-full bg-primary/5">
+              <span className="text-xs font-bold text-primary tracking-[0.2em] uppercase">The Knowledge Sanctuary</span>
+            </div>
+
+            <h2 className="text-5xl sm:text-7xl font-serif font-bold tracking-tight text-white leading-[1.1]">
+              Elevate Your <br />
+              <span className="text-gold-gradient">Spirit & Intellect</span>
+            </h2>
+          </div>
 
           {/* Subheading */}
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Track progress, earn XP, unlock achievements, and climb the leaderboard.
-            Learning has never been this exciting! 🚀
+          <p className="text-lg text-muted-foreground max-w-xl mx-auto font-light leading-relaxed animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            A disciplined path to mastering Aqeedha, Tafseer, and Self Development.
+            Track your progress through the ranks of knowledge.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
             <Link href="/login">
-              <Button size="lg" className="neon-glow rounded-full px-10 py-6 text-lg font-bold">
-                <Zap className="mr-2 h-5 w-5" />
-                Start Your Journey
+              <Button size="lg" className="btn-primary rounded-sm h-14 px-10 text-sm">
+                Begin The Path
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 pt-8 max-w-xl mx-auto">
-            <div className="text-center glass rounded-2xl p-4">
-              <div className="text-3xl font-bold gradient-text">3</div>
-              <div className="text-sm text-muted-foreground">Courses</div>
+          {/* Stats - Monolith Style */}
+          <div className="grid grid-cols-3 gap-px bg-white/5 max-w-2xl mx-auto mt-16 border border-white/10 rounded-sm overflow-hidden animate-slide-up" style={{ animationDelay: '0.3s' }}>
+            <div className="bg-card p-6 hover:bg-white/5 transition-colors">
+              <div className="text-3xl font-serif font-bold text-white mb-1">3</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Sciences</div>
             </div>
-            <div className="text-center glass rounded-2xl p-4">
-              <div className="text-3xl font-bold gradient-text">25+</div>
-              <div className="text-sm text-muted-foreground">XP/Class</div>
+            <div className="bg-card p-6 hover:bg-white/5 transition-colors">
+              <div className="text-3xl font-serif font-bold text-white mb-1">25+</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Lessons</div>
             </div>
-            <div className="text-center glass rounded-2xl p-4">
-              <div className="text-3xl font-bold gradient-text">∞</div>
-              <div className="text-sm text-muted-foreground">Rewards</div>
+            <div className="bg-card p-6 hover:bg-white/5 transition-colors">
+              <div className="text-3xl font-serif font-bold text-white mb-1">∞</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Reward</div>
             </div>
           </div>
         </div>
 
-        {/* Leaderboard Section */}
-        <section className="mt-20 max-w-3xl mx-auto">
-          <div className="flex items-center justify-center gap-3 mb-8">
-            <Trophy className="h-7 w-7 text-yellow-400" />
-            <h3 className="text-3xl font-bold">Live Leaderboard</h3>
+        {/* Leaderboard Section - The Stone Tablet */}
+        <section className="mt-24 max-w-2xl mx-auto">
+          <div className="flex items-center justify-center gap-3 mb-10">
+            <Trophy className="h-5 w-5 text-primary" />
+            <h3 className="text-xl font-serif font-bold text-white tracking-wide">Elite Scholars</h3>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-1">
             {loading ? (
               <SkeletonLeaderboard count={5} />
             ) : leaderboard.length === 0 ? (
-              <div className="glass rounded-2xl p-8 text-center space-y-4">
-                <div className="text-5xl">🏆</div>
-                <p className="text-xl font-semibold">Be the first on the leaderboard!</p>
-                <p className="text-muted-foreground">Login and start learning to claim your spot</p>
+              <div className="monolith-card p-12 text-center space-y-4">
+                <div className="text-4xl opacity-20">🏆</div>
+                <p className="text-lg font-serif text-white">The tablet is empty.</p>
+                <p className="text-sm text-muted-foreground">Be the first to inscribe your name.</p>
               </div>
             ) : (
-              leaderboard.map((entry) => (
+              leaderboard.map((entry, index) => (
                 <div
                   key={entry.rank}
-                  className={`glass rounded-2xl p-5 flex items-center gap-4 transition-all hover:scale-[1.02] ${entry.rank === 1 ? 'neon-glow border-yellow-400/30' : ''
-                    }`}
+                  className={`relative flex items-center gap-6 p-5 transition-all
+                    ${index === 0 ? 'bg-primary/10 border border-primary/40 z-10' : 'bg-card border border-white/5 hover:border-white/10'}
+                  `}
                 >
-                  <div className={`w-14 h-14 rounded-full flex items-center justify-center font-bold text-xl ${entry.rank === 1
-                    ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-black'
-                    : entry.rank === 2
-                      ? 'bg-gradient-to-br from-gray-200 to-gray-400 text-black'
-                      : entry.rank === 3
-                        ? 'bg-gradient-to-br from-orange-300 to-orange-500 text-black'
-                        : 'bg-muted text-foreground'
+                  <div className={`w-12 h-12 flex items-center justify-center font-bold text-lg font-serif border
+                    ${index === 0
+                      ? 'bg-primary text-black border-primary'
+                      : 'bg-transparent text-muted-foreground border-white/10'
                     }`}>
-                    {entry.rank === 1 ? '👑' : `#${entry.rank}`}
+                    {index === 0 ? <Crown className="h-5 w-5" /> : `#${entry.rank}`}
                   </div>
+
                   <div className="flex-1">
-                    <div className="font-bold text-lg">{entry.username}</div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-3">
+                    <div className={`font-bold text-base tracking-wide ${index === 0 ? 'text-white' : 'text-zinc-300'}`}>
+                      {entry.username}
+                    </div>
+                    <div className="text-xs text-muted-foreground flex items-center gap-3 mt-1 font-mono uppercase tracking-wider">
                       <span className="flex items-center gap-1">
-                        <Star className="h-4 w-4 text-purple-400" />
-                        Level {entry.level}
+                        LEVEL {entry.level}
                       </span>
-                      <span className="flex items-center gap-1">
-                        <Zap className="h-4 w-4 text-yellow-400" />
+                      <span className="w-1 h-1 bg-white/20 rounded-full"></span>
+                      <span className="flex items-center gap-1 text-primary/80">
                         {entry.xp} XP
                       </span>
                     </div>
                   </div>
+
                   <div className="text-right">
-                    <div className="text-3xl font-bold gradient-text">{entry.percentage}%</div>
-                    <div className="text-xs text-muted-foreground">Completion</div>
+                    <div className="text-xl font-serif font-bold text-white">{entry.percentage}%</div>
+                    <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Mastery</div>
                   </div>
                 </div>
               ))
@@ -155,11 +157,11 @@ export default function LandingPage() {
           </div>
 
           {leaderboard.length > 0 && (
-            <div className="text-center mt-8">
+            <div className="text-center mt-12">
               <Link href="/login">
-                <Button variant="outline" size="lg" className="glass rounded-full px-8">
-                  <Users className="mr-2 h-5 w-5" />
-                  Join the Competition
+                <Button variant="ghost" className="text-muted-foreground hover:text-white uppercase text-xs tracking-[0.2em] hover:bg-transparent">
+                  View Full Roster
+                  <ArrowRight className="ml-2 h-3 w-3" />
                 </Button>
               </Link>
             </div>
@@ -169,29 +171,17 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 py-8 text-center text-sm text-muted-foreground border-t border-white/5">
-        <p>
-          © 2026{' '}
-          <a
-            href="https://linktr.ee/msmvalavannur"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-purple-400 transition-colors"
-          >
-            MSM Valavannur
-          </a>
-          {' '}• Built by{' '}
-          <a
-            href="https://www.instagram.com/hadihunnas/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-purple-400 transition-colors font-medium"
-          >
-            Hunnas
-          </a>
-          {' '}with ❤️
-        </p>
+      <footer className="relative z-10 py-8 text-center border-t border-white/5 bg-black/20">
+        <div className="text-xs text-muted-foreground font-mono tracking-wider">
+          <p className="mb-2">EST. 2026 • MSM VALAVANNUR</p>
+          <div className="flex justify-center gap-4 opacity-50">
+            <span>BUILT WITH PRECISION</span>
+            <span>•</span>
+            <span>HONOR THE CRAFT</span>
+          </div>
+        </div>
       </footer>
     </div>
   );
 }
+

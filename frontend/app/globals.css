@@ -3,77 +3,91 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Gen Z Neon Theme - Vibrant & Eye-Candy */
+/* Celestial Monolith Theme - Dignified & Eternal */
 :root {
-  --radius: 1rem;
+  --radius: 0.25rem;
+  /* Sharp, disciplined corners */
 
-  /* Light mode - still vibrant */
-  --background: oklch(0.98 0.01 280);
-  --foreground: oklch(0.15 0.02 280);
-  --card: oklch(1 0 0 / 80%);
-  --card-foreground: oklch(0.15 0.02 280);
-  --popover: oklch(1 0 0 / 90%);
-  --popover-foreground: oklch(0.15 0.02 280);
-  --primary: oklch(0.65 0.25 280);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.55 0.22 330);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.95 0.02 280);
-  --muted-foreground: oklch(0.45 0.02 280);
-  --accent: oklch(0.7 0.2 200);
-  --accent-foreground: oklch(0.15 0 0);
-  --destructive: oklch(0.6 0.25 25);
-  --border: oklch(0.9 0.02 280);
-  --input: oklch(0.95 0.02 280);
-  --ring: oklch(0.65 0.25 280);
+  /* Dark mode by default concept */
+  --background: #0f111a;
+  /* Deep Midnight Indigo */
+  --foreground: #f8fafc;
+  /* Crisp White */
 
-  /* Charts - Neon palette */
-  --chart-1: oklch(0.7 0.25 280);
-  --chart-2: oklch(0.65 0.22 330);
-  --chart-3: oklch(0.7 0.2 200);
-  --chart-4: oklch(0.75 0.2 140);
-  --chart-5: oklch(0.8 0.18 60);
+  --card: #1a1d2d;
+  /* Solid Slate */
+  --card-foreground: #f8fafc;
 
-  /* Gamification colors */
-  --xp-bar: linear-gradient(90deg, oklch(0.7 0.25 280), oklch(0.65 0.22 330));
-  --level-glow: oklch(0.7 0.25 280 / 50%);
-  --streak-fire: oklch(0.7 0.25 30);
-  --achievement-gold: oklch(0.8 0.18 85);
+  --popover: #1a1d2d;
+  --popover-foreground: #f8fafc;
+
+  --primary: #bf9b30;
+  /* Muted Gold - Achievement & Focus */
+  --primary-foreground: #0f111a;
+
+  --secondary: #334155;
+  /* Muted Slate */
+  --secondary-foreground: #f8fafc;
+
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+
+  --accent: #2c2f3f;
+  /* Slightly lighter slate for interaction */
+  --accent-foreground: #bf9b30;
+
+  --destructive: #7f1d1d;
+  /* Deep Crimson */
+  --destructive-foreground: #f8fafc;
+
+  --border: #bf9b30;
+  /* Gold borders */
+  --input: #1e293b;
+  --ring: #bf9b30;
+
+  /* Chart colors - Muted & Serious */
+  --chart-1: #bf9b30;
+  --chart-2: #94a3b8;
+  --chart-3: #475569;
+  --chart-4: #cbd5e1;
+  --chart-5: #64748b;
+
+  /* Gamification Specifics */
+  --xp-bar: linear-gradient(90deg, #bf9b30, #fcd34d);
+  /* Gold Gradient */
+  --level-glow: rgba(191, 155, 48, 0.2);
+  --streak-fire: #d97706;
+  /* Amber */
 }
 
-/* Dark mode - Primary experience for Gen Z */
+/* Enforce Dark Mode Aesthetics specifically */
 .dark {
-  --background: oklch(0.12 0.02 280);
-  --foreground: oklch(0.95 0.01 280);
-  --card: oklch(0.18 0.03 280 / 80%);
-  --card-foreground: oklch(0.95 0.01 280);
-  --popover: oklch(0.15 0.03 280 / 95%);
-  --popover-foreground: oklch(0.95 0.01 280);
-  --primary: oklch(0.7 0.25 280);
-  --primary-foreground: oklch(0.12 0 0);
-  --secondary: oklch(0.65 0.22 330);
-  --secondary-foreground: oklch(0.12 0 0);
-  --muted: oklch(0.25 0.02 280);
-  --muted-foreground: oklch(0.65 0.02 280);
-  --accent: oklch(0.7 0.2 200);
-  --accent-foreground: oklch(0.12 0 0);
-  --destructive: oklch(0.65 0.25 25);
-  --border: oklch(0.3 0.03 280);
-  --input: oklch(0.25 0.03 280);
-  --ring: oklch(0.7 0.25 280);
-
-  --chart-1: oklch(0.75 0.25 280);
-  --chart-2: oklch(0.7 0.22 330);
-  --chart-3: oklch(0.75 0.2 200);
-  --chart-4: oklch(0.8 0.2 140);
-  --chart-5: oklch(0.85 0.18 60);
+  --background: #0f111a;
+  --foreground: #f8fafc;
+  --card: #1a1d2d;
+  --card-foreground: #f8fafc;
+  --popover: #1a1d2d;
+  --popover-foreground: #f8fafc;
+  --primary: #bf9b30;
+  --primary-foreground: #0f111a;
+  --secondary: #334155;
+  --secondary-foreground: #f8fafc;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #2c2f3f;
+  --accent-foreground: #bf9b30;
+  --destructive: #7f1d1d;
+  --border: #2c2f3f;
+  /* Subtle borders for general UI, Gold for emphasis */
+  --input: #1e293b;
+  --ring: #bf9b30;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-jakarta);
+  --font-serif: var(--font-libre);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --color-popover-foreground: var(--popover-foreground);
@@ -95,11 +109,9 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: calc(var(--radius));
+  --radius-lg: calc(var(--radius) + 2px);
 }
 
 @layer base {
@@ -108,102 +120,80 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif tracking-tight text-white;
   }
 }
 
-/* Custom Gen Z Utilities */
+/* Celestial Monolith Utilities */
 @layer utilities {
-  .glass {
-    @apply bg-card/60 backdrop-blur-xl border border-white/10;
+
+  /* Replaces glass - Solid, weighty surfaces */
+  .monolith-card {
+    @apply bg-card border border-white/5 shadow-2xl;
   }
 
-  .neon-glow {
-    box-shadow: 0 0 20px oklch(0.7 0.25 280 / 40%),
-      0 0 40px oklch(0.7 0.25 280 / 20%);
+  .monolith-card-gold {
+    @apply bg-card border border-primary/30;
+    box-shadow: 0 0 15px rgba(191, 155, 48, 0.1);
   }
 
-  .neon-glow-pink {
-    box-shadow: 0 0 20px oklch(0.65 0.22 330 / 40%),
-      0 0 40px oklch(0.65 0.22 330 / 20%);
+  /* Text Gradients - Subtle Muted Gold */
+  .text-gold {
+    @apply text-primary;
   }
 
-  .gradient-text {
+  .text-gold-gradient {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, oklch(0.7 0.25 280), oklch(0.65 0.22 330), oklch(0.7 0.2 200));
+    background-image: linear-gradient(135deg, #bf9b30, #fcd34d, #bf9b30);
   }
 
-  .gradient-bg {
-    background: linear-gradient(135deg, oklch(0.12 0.02 280), oklch(0.15 0.03 300), oklch(0.12 0.02 260));
+  /* Interactive Elements */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground font-bold tracking-wide uppercase hover:bg-yellow-600 transition-colors shadow-lg active:scale-95;
   }
 
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
+  .btn-outline {
+    @apply border border-primary text-primary hover:bg-primary/10 transition-colors uppercase tracking-wide font-bold;
   }
 
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
+  /* Animations - "Heavy" & "Deliberate" */
+  .animate-slide-up {
+    animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
   }
 
-  .streak-fire {
+  .animate-fade-in {
+    animation: fade-in 0.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  /* Streak Fire - Dignified */
+  .streak-icon {
     @apply text-orange-500;
-    text-shadow: 0 0 10px oklch(0.7 0.25 30 / 60%);
-  }
-
-  .xp-gradient {
-    background: linear-gradient(90deg, oklch(0.7 0.25 280), oklch(0.65 0.22 330));
-  }
-
-  .level-badge {
-    @apply bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold px-3 py-1 rounded-full text-sm;
-    box-shadow: 0 0 15px oklch(0.65 0.22 300 / 50%);
+    filter: drop-shadow(0 0 8px rgba(217, 119, 6, 0.5));
   }
 }
 
-@keyframes float {
-
-  0%,
-  100% {
+@keyframes slide-up {
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
-
-  50% {
-    transform: translateY(-10px);
-  }
 }
 
-@keyframes pulse-glow {
-
-  0%,
-  100% {
+@keyframes fade-in {
+  to {
     opacity: 1;
-  }
-
-  50% {
-    opacity: 0.7;
-  }
-}
-
-/* Progress ring animation */
-@keyframes progress-ring {
-  0% {
-    stroke-dashoffset: 251.2;
-  }
-}
-
-.progress-ring {
-  animation: progress-ring 1s ease-out forwards;
-}
-
-/* Confetti animation helper */
-@keyframes confetti-fall {
-  0% {
-    transform: translateY(-100%) rotate(0deg);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
   }
 }
