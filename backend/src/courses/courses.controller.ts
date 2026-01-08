@@ -54,4 +54,10 @@ export class CoursesController {
     getClassesBySubject(@Param('id') id: string) {
         return this.coursesService.getClassesBySubject(id);
     }
+
+    @Post('classes/bulk-delete')
+    @Roles(Role.ADMIN)
+    bulkDeleteClasses(@Body() data: { ids: string[] }) {
+        return this.coursesService.bulkDeleteClasses(data.ids);
+    }
 }

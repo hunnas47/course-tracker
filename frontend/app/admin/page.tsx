@@ -8,11 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton, SkeletonTable, SkeletonListItem } from '@/components/ui/skeleton';
 import {
-    Users, BookOpen, BarChart,
+    Users, BookOpen, BarChart3,
     Sparkles, LogOut, Plus, CheckCircle2, AlertCircle,
-    User, Pencil, Trash2, GripVertical, Save, X
+    User, Pencil, Trash2, Save, X, TrendingUp, Activity, Target
 } from 'lucide-react';
 
 interface Student {
@@ -32,9 +34,21 @@ interface ClassItem {
     subject?: { name: string };
 }
 
+interface Analytics {
+    dailyActivity: Array<{ date: string; classesWatched: number }>;
+    subjectCompletion: Array<{ name: string; completionRate: number; totalClasses: number }>;
+    topPerformers: Array<{ username: string; xp: number; level: number; percentage: number }>;
+    overview: {
+        totalStudents: number;
+        totalClasses: number;
+        avgCompletionRate: number;
+        activeToday: number;
+    };
+}
+
 export default function AdminDashboard() {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState({ type: '', text: '' });
 
     // Students
@@ -42,6 +56,7 @@ export default function AdminDashboard() {
     const [newStudent, setNewStudent] = useState({ username: '', password: '', mentorName: '' });
     const [editingStudent, setEditingStudent] = useState<string | null>(null);
     const [editStudentData, setEditStudentData] = useState({ username: '', password: '', mentorName: '' });
+    const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
 
     // Classes
     const [classes, setClasses] = useState<ClassItem[]>([]);
@@ -49,12 +64,23 @@ export default function AdminDashboard() {
     const [editingClass, setEditingClass] = useState<string | null>(null);
     const [editClassData, setEditClassData] = useState({ title: '', date: '' });
     const [subjects, setSubjects] = useState<any[]>([]);
+    const [selectedClasses, setSelectedClasses] = useState<Set<string>>(new Set());
+
+    // Analytics
+    const [analytics, setAnalytics] = useState<Analytics | null>(null);
 
     useEffect(() => {
-        fetchStudents();
-        fetchClasses();
-        fetchSubjects();
+        fetchAll();
     }, []);
+
+    const fetchAll = async () => {
+        setLoading(true);
+        try {
+            await Promise.all([fetchStudents(), fetchClasses(), fetchSubjects(), fetchAnalytics()]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchStudents = async () => {
         try {
@@ -83,29 +109,97 @@ export default function AdminDashboard() {
         }
     };
 
+    const fetchAnalytics = async () => {
+        try {
+            const res = await api.get('/progress/analytics');
+            setAnalytics(res.data);
+        } catch (err) {
+            console.error('Failed to fetch analytics:', err);
+        }
+    };
+
     const showMessage = (type: string, text: string) => {
         setMessage({ type, text });
         setTimeout(() => setMessage({ type: '', text: '' }), 3000);
     };
 
+    // Bulk selection handlers
+    const toggleStudentSelection = (id: string) => {
+        const newSet = new Set(selectedStudents);
+        if (newSet.has(id)) newSet.delete(id);
+        else newSet.add(id);
+        setSelectedStudents(newSet);
+    };
+
+    const toggleAllStudents = () => {
+        if (selectedStudents.size === students.length) {
+            setSelectedStudents(new Set());
+        } else {
+            setSelectedStudents(new Set(students.map(s => s.id)));
+        }
+    };
+
+    const toggleClassSelection = (id: string) => {
+        const newSet = new Set(selectedClasses);
+        if (newSet.has(id)) newSet.delete(id);
+        else newSet.add(id);
+        setSelectedClasses(newSet);
+    };
+
+    const toggleAllClasses = () => {
+        if (selectedClasses.size === classes.length) {
+            setSelectedClasses(new Set());
+        } else {
+            setSelectedClasses(new Set(classes.map(c => c.id)));
+        }
+    };
+
+    // Bulk delete handlers
+    const handleBulkDeleteStudents = async () => {
+        if (selectedStudents.size === 0) return;
+        if (!confirm(`Delete ${selectedStudents.size} students? This will delete all their progress.`)) return;
+
+        try {
+            await api.post('/users/bulk-delete', { ids: Array.from(selectedStudents) });
+            showMessage('success', `Deleted ${selectedStudents.size} students! ✨`);
+            setSelectedStudents(new Set());
+            fetchStudents();
+            fetchAnalytics();
+        } catch (error: any) {
+            showMessage('error', error.response?.data?.message || 'Failed to delete students');
+        }
+    };
+
+    const handleBulkDeleteClasses = async () => {
+        if (selectedClasses.size === 0) return;
+        if (!confirm(`Delete ${selectedClasses.size} classes? This will delete all progress for these classes.`)) return;
+
+        try {
+            await api.post('/courses/classes/bulk-delete', { ids: Array.from(selectedClasses) });
+            showMessage('success', `Deleted ${selectedClasses.size} classes! 📚`);
+            setSelectedClasses(new Set());
+            fetchClasses();
+            fetchAnalytics();
+        } catch (error: any) {
+            showMessage('error', error.response?.data?.message || 'Failed to delete classes');
+        }
+    };
+
     // Student CRUD
     const handleCreateUser = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
         try {
             await api.post('/users', { ...newStudent, role: 'STUDENT' });
             showMessage('success', 'Student created successfully! ✨');
             setNewStudent({ username: '', password: '', mentorName: '' });
             fetchStudents();
+            fetchAnalytics();
         } catch (error: any) {
             showMessage('error', error.response?.data?.message || 'Failed to create student');
-        } finally {
-            setLoading(false);
         }
     };
 
     const handleUpdateStudent = async (id: string) => {
-        setLoading(true);
         try {
             const updateData: any = {};
             if (editStudentData.username) updateData.username = editStudentData.username;
@@ -118,29 +212,24 @@ export default function AdminDashboard() {
             fetchStudents();
         } catch (error: any) {
             showMessage('error', error.response?.data?.message || 'Failed to update student');
-        } finally {
-            setLoading(false);
         }
     };
 
     const handleDeleteStudent = async (id: string) => {
         if (!confirm('Are you sure? This will delete all student progress.')) return;
-        setLoading(true);
         try {
             await api.delete(`/users/${id}`);
             showMessage('success', 'Student deleted');
             fetchStudents();
+            fetchAnalytics();
         } catch (error: any) {
             showMessage('error', error.response?.data?.message || 'Failed to delete student');
-        } finally {
-            setLoading(false);
         }
     };
 
     // Class CRUD
     const handleCreateClass = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
         try {
             const subject = subjects.find(s => s.name === newClass.subjectName);
             if (!subject) throw new Error('Subject not found');
@@ -154,15 +243,13 @@ export default function AdminDashboard() {
             showMessage('success', 'Class created! 📚');
             setNewClass({ subjectName: '', title: '', date: '' });
             fetchClasses();
+            fetchAnalytics();
         } catch (error: any) {
             showMessage('error', error.response?.data?.message || 'Failed to create class');
-        } finally {
-            setLoading(false);
         }
     };
 
     const handleUpdateClass = async (id: string) => {
-        setLoading(true);
         try {
             await api.put(`/courses/class/${id}`, editClassData);
             showMessage('success', 'Class updated! ✨');
@@ -170,22 +257,18 @@ export default function AdminDashboard() {
             fetchClasses();
         } catch (error: any) {
             showMessage('error', error.response?.data?.message || 'Failed to update class');
-        } finally {
-            setLoading(false);
         }
     };
 
     const handleDeleteClass = async (id: string) => {
         if (!confirm('Are you sure? This will delete all progress for this class.')) return;
-        setLoading(true);
         try {
             await api.delete(`/courses/class/${id}`);
             showMessage('success', 'Class deleted');
             fetchClasses();
+            fetchAnalytics();
         } catch (error: any) {
             showMessage('error', error.response?.data?.message || 'Failed to delete class');
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -196,7 +279,7 @@ export default function AdminDashboard() {
 
         const index = subjectClasses.findIndex(c => c.id === classId);
         if ((direction === 'up' && index === 0) || (direction === 'down' && index === subjectClasses.length - 1)) {
-            return; // Can't move
+            return;
         }
 
         const newOrder = [...subjectClasses];
@@ -244,6 +327,54 @@ export default function AdminDashboard() {
         return acc;
     }, {} as Record<string, ClassItem[]>);
 
+    // Skeleton loading
+    if (loading) {
+        return (
+            <div className="min-h-screen gradient-bg">
+                <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-float" />
+                    <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+                </div>
+                <header className="sticky top-0 z-50 glass border-b border-white/5">
+                    <div className="container mx-auto px-4">
+                        <div className="flex items-center justify-between h-16">
+                            <Skeleton className="h-6 w-32" />
+                            <Skeleton className="h-9 w-24 rounded-lg" />
+                        </div>
+                    </div>
+                </header>
+                <main className="container mx-auto px-4 py-8 relative z-10 space-y-8">
+                    <Skeleton className="h-10 w-48" />
+                    <div className="flex gap-2">
+                        <Skeleton className="h-10 w-24 rounded-lg" />
+                        <Skeleton className="h-10 w-24 rounded-lg" />
+                        <Skeleton className="h-10 w-24 rounded-lg" />
+                    </div>
+                    <div className="grid gap-6 lg:grid-cols-2">
+                        <Card className="glass border-white/10">
+                            <CardHeader>
+                                <Skeleton className="h-6 w-40" />
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <Skeleton className="h-10 w-full" />
+                                <Skeleton className="h-10 w-full" />
+                                <Skeleton className="h-10 w-full" />
+                            </CardContent>
+                        </Card>
+                        <Card className="glass border-white/10">
+                            <CardHeader>
+                                <Skeleton className="h-6 w-40" />
+                            </CardHeader>
+                            <CardContent>
+                                <SkeletonTable rows={5} cols={3} />
+                            </CardContent>
+                        </Card>
+                    </div>
+                </main>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen gradient-bg">
             {/* Animated background */}
@@ -271,8 +402,8 @@ export default function AdminDashboard() {
                 {/* Global message */}
                 {message.text && (
                     <div className={`fixed top-20 right-4 z-50 flex items-center gap-2 text-sm p-4 rounded-xl shadow-lg ${message.type === 'success'
-                            ? 'bg-green-500/90 text-white'
-                            : 'bg-red-500/90 text-white'
+                        ? 'bg-green-500/90 text-white'
+                        : 'bg-red-500/90 text-white'
                         }`}>
                         {message.type === 'success' ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
                         {message.text}
@@ -290,7 +421,7 @@ export default function AdminDashboard() {
                             <BookOpen className="h-4 w-4" /> Classes
                         </TabsTrigger>
                         <TabsTrigger value="analytics" className="gap-2 rounded-lg data-[state=active]:neon-glow">
-                            <BarChart className="h-4 w-4" /> Stats
+                            <BarChart3 className="h-4 w-4" /> Analytics
                         </TabsTrigger>
                     </TabsList>
 
@@ -337,8 +468,8 @@ export default function AdminDashboard() {
                                                 className="glass border-white/10"
                                             />
                                         </div>
-                                        <Button type="submit" disabled={loading} className="w-full neon-glow">
-                                            {loading ? 'Creating...' : 'Create Student'}
+                                        <Button type="submit" className="w-full neon-glow">
+                                            Create Student
                                         </Button>
                                     </form>
                                 </CardContent>
@@ -347,10 +478,32 @@ export default function AdminDashboard() {
                             {/* Students List */}
                             <Card className="glass border-white/10">
                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2">
-                                        <Users className="h-5 w-5 text-purple-400" />
-                                        Students ({students.length})
-                                    </CardTitle>
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="flex items-center gap-2">
+                                            <Users className="h-5 w-5 text-purple-400" />
+                                            Students ({students.length})
+                                        </CardTitle>
+                                        {selectedStudents.size > 0 && (
+                                            <Button
+                                                size="sm"
+                                                variant="destructive"
+                                                onClick={handleBulkDeleteStudents}
+                                                className="gap-2"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                                Delete ({selectedStudents.size})
+                                            </Button>
+                                        )}
+                                    </div>
+                                    {students.length > 0 && (
+                                        <div className="flex items-center gap-2 pt-2">
+                                            <Checkbox
+                                                checked={selectedStudents.size === students.length && students.length > 0}
+                                                onCheckedChange={toggleAllStudents}
+                                            />
+                                            <span className="text-sm text-muted-foreground">Select All</span>
+                                        </div>
+                                    )}
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-3 max-h-[500px] overflow-y-auto">
@@ -381,7 +534,7 @@ export default function AdminDashboard() {
                                                                 className="glass border-white/10"
                                                             />
                                                             <div className="flex gap-2">
-                                                                <Button size="sm" onClick={() => handleUpdateStudent(student.id)} disabled={loading}>
+                                                                <Button size="sm" onClick={() => handleUpdateStudent(student.id)}>
                                                                     <Save className="h-4 w-4 mr-1" /> Save
                                                                 </Button>
                                                                 <Button size="sm" variant="ghost" onClick={() => setEditingStudent(null)}>
@@ -391,6 +544,10 @@ export default function AdminDashboard() {
                                                         </div>
                                                     ) : (
                                                         <div className="flex items-center gap-4">
+                                                            <Checkbox
+                                                                checked={selectedStudents.has(student.id)}
+                                                                onCheckedChange={() => toggleStudentSelection(student.id)}
+                                                            />
                                                             <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
                                                                 <User className="h-5 w-5 text-purple-400" />
                                                             </div>
@@ -469,24 +626,68 @@ export default function AdminDashboard() {
                                             />
                                         </div>
                                     </div>
-                                    <Button type="submit" disabled={loading || !newClass.subjectName} className="neon-glow">
-                                        {loading ? 'Creating...' : 'Add Class'}
+                                    <Button type="submit" disabled={!newClass.subjectName} className="neon-glow">
+                                        Add Class
                                     </Button>
                                 </form>
                             </CardContent>
                         </Card>
 
+                        {/* Bulk Actions */}
+                        {selectedClasses.size > 0 && (
+                            <div className="flex items-center gap-4 p-4 glass rounded-xl">
+                                <span className="text-sm">{selectedClasses.size} classes selected</span>
+                                <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={handleBulkDeleteClasses}
+                                    className="gap-2"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete Selected
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => setSelectedClasses(new Set())}
+                                >
+                                    Clear Selection
+                                </Button>
+                            </div>
+                        )}
+
                         {/* Classes by Subject */}
                         {Object.entries(classesBySubject).map(([subjectName, subjectClasses]) => (
                             <Card key={subjectName} className="glass border-white/10">
                                 <CardHeader>
-                                    <CardTitle>{subjectName.replace('_', ' ')} ({subjectClasses.length} classes)</CardTitle>
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle>{subjectName.replace('_', ' ')} ({subjectClasses.length} classes)</CardTitle>
+                                        <div className="flex items-center gap-2">
+                                            <Checkbox
+                                                checked={subjectClasses.every(c => selectedClasses.has(c.id))}
+                                                onCheckedChange={() => {
+                                                    const allSelected = subjectClasses.every(c => selectedClasses.has(c.id));
+                                                    const newSet = new Set(selectedClasses);
+                                                    subjectClasses.forEach(c => {
+                                                        if (allSelected) newSet.delete(c.id);
+                                                        else newSet.add(c.id);
+                                                    });
+                                                    setSelectedClasses(newSet);
+                                                }}
+                                            />
+                                            <span className="text-sm text-muted-foreground">Select All</span>
+                                        </div>
+                                    </div>
                                     <CardDescription>Drag to reorder or use arrows</CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-2">
                                         {subjectClasses.sort((a, b) => a.sortOrder - b.sortOrder).map((cls, idx) => (
                                             <div key={cls.id} className="glass rounded-lg p-3 flex items-center gap-3">
+                                                <Checkbox
+                                                    checked={selectedClasses.has(cls.id)}
+                                                    onCheckedChange={() => toggleClassSelection(cls.id)}
+                                                />
                                                 <div className="flex flex-col gap-1">
                                                     <Button
                                                         size="icon"
@@ -553,33 +754,157 @@ export default function AdminDashboard() {
                     </TabsContent>
 
                     {/* Analytics Tab */}
-                    <TabsContent value="analytics">
-                        <div className="grid gap-6 md:grid-cols-3">
+                    <TabsContent value="analytics" className="space-y-6">
+                        {/* Overview Stats */}
+                        <div className="grid gap-6 md:grid-cols-4">
                             <Card className="glass border-white/10">
                                 <CardContent className="pt-6">
-                                    <div className="text-center space-y-2">
-                                        <div className="text-4xl font-bold gradient-text">{students.length}</div>
-                                        <div className="text-muted-foreground">Total Students</div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                                            <Users className="h-6 w-6 text-purple-400" />
+                                        </div>
+                                        <div>
+                                            <div className="text-3xl font-bold gradient-text">{analytics?.overview.totalStudents || 0}</div>
+                                            <div className="text-sm text-muted-foreground">Total Students</div>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
                             <Card className="glass border-white/10">
                                 <CardContent className="pt-6">
-                                    <div className="text-center space-y-2">
-                                        <div className="text-4xl font-bold gradient-text">{subjects.length}</div>
-                                        <div className="text-muted-foreground">Active Courses</div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+                                            <BookOpen className="h-6 w-6 text-cyan-400" />
+                                        </div>
+                                        <div>
+                                            <div className="text-3xl font-bold gradient-text">{analytics?.overview.totalClasses || 0}</div>
+                                            <div className="text-sm text-muted-foreground">Total Classes</div>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
                             <Card className="glass border-white/10">
                                 <CardContent className="pt-6">
-                                    <div className="text-center space-y-2">
-                                        <div className="text-4xl font-bold gradient-text">{classes.length}</div>
-                                        <div className="text-muted-foreground">Total Classes</div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                                            <Target className="h-6 w-6 text-green-400" />
+                                        </div>
+                                        <div>
+                                            <div className="text-3xl font-bold gradient-text">{analytics?.overview.avgCompletionRate || 0}%</div>
+                                            <div className="text-sm text-muted-foreground">Avg Completion</div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                            <Card className="glass border-white/10">
+                                <CardContent className="pt-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center">
+                                            <Activity className="h-6 w-6 text-yellow-400" />
+                                        </div>
+                                        <div>
+                                            <div className="text-3xl font-bold gradient-text">{analytics?.overview.activeToday || 0}</div>
+                                            <div className="text-sm text-muted-foreground">Active Today</div>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
                         </div>
+
+                        <div className="grid gap-6 lg:grid-cols-2">
+                            {/* Daily Activity Chart */}
+                            <Card className="glass border-white/10">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <TrendingUp className="h-5 w-5 text-purple-400" />
+                                        Daily Activity (Last 7 Days)
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-3">
+                                        {analytics?.dailyActivity.map((day) => {
+                                            const maxVal = Math.max(...(analytics?.dailyActivity.map(d => d.classesWatched) || [1]), 1);
+                                            const percentage = (day.classesWatched / maxVal) * 100;
+                                            return (
+                                                <div key={day.date} className="space-y-1">
+                                                    <div className="flex justify-between text-sm">
+                                                        <span className="text-muted-foreground">
+                                                            {new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                                        </span>
+                                                        <span className="font-semibold">{day.classesWatched} classes</span>
+                                                    </div>
+                                                    <div className="h-3 rounded-full bg-muted overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
+                                                            style={{ width: `${percentage}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Subject Completion Rates */}
+                            <Card className="glass border-white/10">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Target className="h-5 w-5 text-cyan-400" />
+                                        Subject Completion Rates
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        {analytics?.subjectCompletion.map((subject) => (
+                                            <div key={subject.name} className="space-y-2">
+                                                <div className="flex justify-between">
+                                                    <span className="font-medium">{subject.name}</span>
+                                                    <span className="text-sm text-muted-foreground">
+                                                        {subject.completionRate}% ({subject.totalClasses} classes)
+                                                    </span>
+                                                </div>
+                                                <div className="h-4 rounded-full bg-muted overflow-hidden">
+                                                    <div
+                                                        className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-500"
+                                                        style={{ width: `${subject.completionRate}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Top Performers */}
+                        <Card className="glass border-white/10">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Users className="h-5 w-5 text-yellow-400" />
+                                    Top Performers
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid gap-4 md:grid-cols-5">
+                                    {analytics?.topPerformers.map((performer, index) => (
+                                        <div key={performer.username} className={`glass rounded-xl p-4 text-center space-y-2 ${index === 0 ? 'neon-glow' : ''}`}>
+                                            <div className={`text-3xl ${index === 0 ? '' : 'opacity-70'}`}>
+                                                {index === 0 ? '👑' : index === 1 ? '🥈' : index === 2 ? '🥉' : '⭐'}
+                                            </div>
+                                            <div className="font-bold truncate">{performer.username}</div>
+                                            <div className="text-sm text-muted-foreground">
+                                                Level {performer.level} • {performer.xp} XP
+                                            </div>
+                                            <div className="text-lg font-bold gradient-text">{performer.percentage}%</div>
+                                        </div>
+                                    ))}
+                                    {(!analytics?.topPerformers || analytics.topPerformers.length === 0) && (
+                                        <p className="text-muted-foreground col-span-5 text-center py-8">No performers yet</p>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
                     </TabsContent>
                 </Tabs>
             </main>

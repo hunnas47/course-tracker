@@ -78,4 +78,13 @@ export class UsersService {
 
         return this.prisma.user.delete({ where: { id } });
     }
+
+    async bulkDelete(ids: string[]) {
+        // Delete all related records first for all users
+        await this.prisma.progress.deleteMany({ where: { userId: { in: ids } } });
+        await this.prisma.assignmentScore.deleteMany({ where: { userId: { in: ids } } });
+        await this.prisma.examScore.deleteMany({ where: { userId: { in: ids } } });
+
+        return this.prisma.user.deleteMany({ where: { id: { in: ids } } });
+    }
 }

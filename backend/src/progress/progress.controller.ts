@@ -1,6 +1,8 @@
 import { Controller, Post, Get, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard, Roles } from '../auth/roles.guard';
+import { Role } from '@prisma/client';
 
 @Controller('progress')
 export class ProgressController {
@@ -10,6 +12,14 @@ export class ProgressController {
     @Get('leaderboard')
     getLeaderboard() {
         return this.progressService.getLeaderboard();
+    }
+
+    // Admin analytics endpoint
+    @Get('analytics')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(Role.ADMIN)
+    getAnalytics() {
+        return this.progressService.getAnalytics();
     }
 
     // Protected endpoints below

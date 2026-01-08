@@ -41,4 +41,10 @@ export class UsersController {
     delete(@Param('id') id: string) {
         return this.usersService.delete(id);
     }
+
+    @Post('bulk-delete')
+    @Roles(Role.ADMIN)
+    bulkDelete(@Body() data: { ids: string[] }) {
+        return this.usersService.bulkDelete(data.ids);
+    }
 }

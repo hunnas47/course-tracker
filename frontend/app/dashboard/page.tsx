@@ -6,6 +6,7 @@ import api from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Skeleton, SkeletonCourseCard, SkeletonListItem } from '@/components/ui/skeleton';
 import {
     BookOpen, Flame, Zap, Trophy, Star, Sparkles,
     Target, ChevronRight, TrendingUp, Users
@@ -94,8 +95,57 @@ export default function StudentDashboard() {
 
     if (loading) {
         return (
-            <div className="min-h-[60vh] flex items-center justify-center">
-                <div className="animate-pulse-glow text-2xl gradient-text font-bold">Loading...</div>
+            <div className="space-y-8 pb-8">
+                {/* Header Skeleton */}
+                <div className="glass rounded-3xl p-6 space-y-6">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div className="space-y-3">
+                            <Skeleton className="h-8 w-64" />
+                            <Skeleton className="h-4 w-48" />
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <Skeleton className="w-20 h-20 rounded-full" />
+                            <div className="space-y-2">
+                                <Skeleton className="h-4 w-24" />
+                                <Skeleton className="h-3 w-32" />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="glass rounded-2xl p-4 space-y-3">
+                        <Skeleton className="h-4 w-40" />
+                        <Skeleton className="h-4 w-full" />
+                    </div>
+                </div>
+
+                {/* Daily Goals Skeleton */}
+                <div className="glass rounded-2xl p-6">
+                    <Skeleton className="h-6 w-32 mb-4" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[1, 2, 3].map(i => (
+                            <Skeleton key={i} className="h-14 rounded-xl" />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Leaderboard Skeleton */}
+                <div className="glass rounded-2xl p-6">
+                    <Skeleton className="h-6 w-32 mb-4" />
+                    <div className="space-y-3">
+                        {[1, 2, 3, 4, 5].map(i => (
+                            <SkeletonListItem key={i} />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Courses Skeleton */}
+                <div className="space-y-4">
+                    <Skeleton className="h-6 w-32" />
+                    <div className="grid gap-6 md:grid-cols-3">
+                        {[1, 2, 3].map(i => (
+                            <SkeletonCourseCard key={i} />
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -198,8 +248,8 @@ export default function StudentDashboard() {
                         <span className="text-sm">Login daily (1/1)</span>
                     </div>
                     <div className={`flex items-center gap-3 p-3 rounded-xl ${(stats?.watchedCount || 0) >= 2
-                            ? 'bg-green-500/10 border border-green-500/20'
-                            : 'bg-purple-500/10 border border-purple-500/20'
+                        ? 'bg-green-500/10 border border-green-500/20'
+                        : 'bg-purple-500/10 border border-purple-500/20'
                         }`}>
                         <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
                             📚
@@ -207,8 +257,8 @@ export default function StudentDashboard() {
                         <span className="text-sm">Watch 2 classes ({Math.min(stats?.watchedCount || 0, 2)}/2)</span>
                     </div>
                     <div className={`flex items-center gap-3 p-3 rounded-xl ${subjects.some(s => s.percentage === 100)
-                            ? 'bg-green-500/10 border border-green-500/20'
-                            : 'bg-pink-500/10 border border-pink-500/20'
+                        ? 'bg-green-500/10 border border-green-500/20'
+                        : 'bg-pink-500/10 border border-pink-500/20'
                         }`}>
                         <div className="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center">
                             🏆
@@ -237,9 +287,9 @@ export default function StudentDashboard() {
                                     }`}
                             >
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${entry.rank === 1 ? 'bg-yellow-400 text-black' :
-                                        entry.rank === 2 ? 'bg-gray-300 text-black' :
-                                            entry.rank === 3 ? 'bg-orange-400 text-black' :
-                                                'bg-muted text-foreground'
+                                    entry.rank === 2 ? 'bg-gray-300 text-black' :
+                                        entry.rank === 3 ? 'bg-orange-400 text-black' :
+                                            'bg-muted text-foreground'
                                     }`}>
                                     #{entry.rank}
                                 </div>
@@ -329,8 +379,8 @@ export default function StudentDashboard() {
                         <div
                             key={achievement.id}
                             className={`flex-shrink-0 w-32 p-4 rounded-xl text-center space-y-2 transition-all ${achievement.unlocked
-                                    ? 'glass neon-glow'
-                                    : 'bg-muted/50 opacity-50'
+                                ? 'glass neon-glow'
+                                : 'bg-muted/50 opacity-50'
                                 }`}
                         >
                             <div className="text-3xl">{achievement.unlocked ? achievement.icon : '🔒'}</div>

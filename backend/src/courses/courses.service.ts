@@ -78,4 +78,10 @@ export class CoursesService {
             orderBy: [{ subjectId: 'asc' }, { sortOrder: 'asc' }],
         });
     }
+
+    async bulkDeleteClasses(ids: string[]) {
+        // Delete all progress records first for all classes
+        await this.prisma.progress.deleteMany({ where: { classId: { in: ids } } });
+        return this.prisma.class.deleteMany({ where: { id: { in: ids } } });
+    }
 }

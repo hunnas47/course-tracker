@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Trophy, Zap, Target, Flame, Sparkles, ArrowRight, Users, Star } from 'lucide-react';
+import { Trophy, Zap, Sparkles, ArrowRight, Users, Star } from 'lucide-react';
+import { SkeletonLeaderboard } from '@/components/ui/skeleton';
 import api from '@/lib/api';
 
 interface LeaderboardEntry {
@@ -58,12 +59,6 @@ export default function LandingPage() {
       {/* Hero Section */}
       <main className="relative z-10 container mx-auto px-4 pt-16 pb-24">
         <div className="text-center space-y-8 max-w-4xl mx-auto">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-sm">
-            <Flame className="h-4 w-4 streak-fire" />
-            <span className="text-muted-foreground">Join students on their learning journey</span>
-          </div>
-
           {/* Main Heading */}
           <h2 className="text-5xl sm:text-7xl font-black tracking-tight leading-tight">
             <span className="gradient-text">Level Up</span>
@@ -113,9 +108,7 @@ export default function LandingPage() {
 
           <div className="space-y-4">
             {loading ? (
-              <div className="glass rounded-2xl p-8 text-center">
-                <div className="animate-pulse-glow text-lg gradient-text">Loading rankings...</div>
-              </div>
+              <SkeletonLeaderboard count={5} />
             ) : leaderboard.length === 0 ? (
               <div className="glass rounded-2xl p-8 text-center space-y-4">
                 <div className="text-5xl">🏆</div>
@@ -173,32 +166,6 @@ export default function LandingPage() {
           )}
         </section>
 
-        {/* Features Grid */}
-        <section className="mt-24 max-w-5xl mx-auto">
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="glass rounded-2xl p-6 text-center space-y-4 hover:scale-105 transition-transform">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-purple-500/20 flex items-center justify-center">
-                <Target className="h-8 w-8 text-purple-400" />
-              </div>
-              <h4 className="text-xl font-bold">Track Progress</h4>
-              <p className="text-muted-foreground">Watch your completion percentage grow as you complete classes</p>
-            </div>
-            <div className="glass rounded-2xl p-6 text-center space-y-4 hover:scale-105 transition-transform">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-yellow-500/20 flex items-center justify-center">
-                <Flame className="h-8 w-8 text-yellow-400" />
-              </div>
-              <h4 className="text-xl font-bold">Build Streaks</h4>
-              <p className="text-muted-foreground">Learn daily to maintain your streak and unlock achievements</p>
-            </div>
-            <div className="glass rounded-2xl p-6 text-center space-y-4 hover:scale-105 transition-transform">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-pink-500/20 flex items-center justify-center">
-                <Trophy className="h-8 w-8 text-pink-400" />
-              </div>
-              <h4 className="text-xl font-bold">Compete</h4>
-              <p className="text-muted-foreground">Climb the leaderboard and become a top performer</p>
-            </div>
-          </div>
-        </section>
       </main>
 
       {/* Footer */}

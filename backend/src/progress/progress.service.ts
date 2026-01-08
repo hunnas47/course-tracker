@@ -172,4 +172,100 @@ export class ProgressService {
             achievements,
         };
     }
+
+    // Get analytics for admin dashboard
+    async getAnalytics() {
+        const now = new Date();
+        const sevenDaysAgo = new Date(now);
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+        // Daily activity for last 7 days
+        const recentProgress = await this.prisma.progress.findMany({
+            where: {
+                isWatched: true,
+                watchedAt: { gte: sevenDaysAgo }
+            },
+            select: { watchedAt: true }
+        });
+
+        const dailyActivity: Record<string, number> = {};
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(now);
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            dailyActivity[dateStr] = 0;
+        }
+
+        recentProgress.forEach(p => {
+            if (p.watchedAt) {
+                const dateStr = p.watchedAt.toISOString().split('T')[0];
+                if (dailyActivity[dateStr] !== undefined) {
+                    dailyActivity[dateStr]++;
+                }
+            }
+        });
+
+        // Completion rates by subject
+        const subjects = await this.prisma.subject.findMany({
+            include: { classes: true }
+        });
+
+        const totalStudents = await this.prisma.user.count({ where: { role: 'STUDENT' } });
+
+        const subjectCompletionPromises = subjects.map(async (subject) => {
+            const totalPossible = subject.classes.length * totalStudents;
+            const totalWatched = await this.prisma.progress.count({
+                where: {
+                    isWatched: true,
+                    class: { subjectId: subject.id }
+                }
+            });
+            return {
+                name: subject.name.replace('_', ' '),
+                completionRate: totalPossible > 0 ? Math.round((totalWatched / totalPossible) * 100) : 0,
+                totalClasses: subject.classes.length,
+                totalWatched
+            };
+        });
+
+        const subjectCompletion = await Promise.all(subjectCompletionPromises);
+
+        // Top performers (top 5 by XP)
+        const leaderboard = await this.getLeaderboard();
+        const topPerformers = leaderboard.slice(0, 5);
+
+        // Overall stats
+        const totalClasses = await this.prisma.class.count();
+        const totalWatchedAll = await this.prisma.progress.count({ where: { isWatched: true } });
+        const avgCompletionRate = totalStudents > 0 && totalClasses > 0
+            ? Math.round((totalWatchedAll / (totalStudents * totalClasses)) * 100)
+            : 0;
+
+        // Active students today
+        const todayStart = new Date(now);
+        todayStart.setHours(0, 0, 0, 0);
+        const activeToday = await this.prisma.progress.findMany({
+            where: {
+                isWatched: true,
+                watchedAt: { gte: todayStart }
+            },
+            select: { userId: true },
+            distinct: ['userId']
+        });
+
+        return {
+            dailyActivity: Object.entries(dailyActivity).map(([date, count]) => ({
+                date,
+                classesWatched: count
+            })),
+            subjectCompletion,
+            topPerformers,
+            overview: {
+                totalStudents,
+                totalClasses,
+                avgCompletionRate,
+                activeToday: activeToday.length
+            }
+        };
+    }
 }
