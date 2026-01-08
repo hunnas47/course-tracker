@@ -126,16 +126,9 @@ export default function StudentDashboard() {
 
     return (
         <div className="min-h-screen bg-background pb-12">
-            {/* Top Bar / HUD */}
-            <div className="border-b border-white/5 bg-card/30 backdrop-blur-md sticky top-0 z-50">
-                <div className="container mx-auto px-4 h-16 flex items-center justify-between max-w-6xl">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-primary/10 flex items-center justify-center rounded border border-primary/20">
-                            <Scroll className="h-4 w-4 text-primary" />
-                        </div>
-                        <span className="font-serif font-bold tracking-wide hidden sm:block">IHYA SYSTEM</span>
-                    </div>
-
+            {/* Top Bar / HUD - Non-sticky now to avoid collision */}
+            <div className="border-b border-white/5 bg-card/30">
+                <div className="container mx-auto px-4 h-16 flex items-center justify-end max-w-6xl">
                     <div className="flex items-center gap-6 text-sm font-mono">
                         <div className="flex items-center gap-2 text-muted-foreground">
                             <Flame className="h-4 w-4 text-orange-600" />

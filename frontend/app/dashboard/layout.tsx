@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sparkles, LogOut, Home, Menu, X } from 'lucide-react';
+import { Sparkles, LogOut, Home, Menu, X, Scroll } from 'lucide-react';
 
 export default function DashboardLayout({
     children,
@@ -35,13 +35,15 @@ export default function DashboardLayout({
             </div>
 
             {/* Navigation */}
-            <nav className="sticky top-0 z-50 glass border-b border-white/5">
+            <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-white/5">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
-                        <Link href="/dashboard" className="flex items-center gap-2">
-                            <Sparkles className="h-6 w-6 text-purple-400" />
-                            <span className="text-xl font-bold gradient-text">IHYA</span>
+                        <Link href="/dashboard" className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-primary/10 flex items-center justify-center rounded border border-primary/20">
+                                <Scroll className="h-4 w-4 text-primary" />
+                            </div>
+                            <span className="text-xl font-serif font-bold text-white tracking-tight">IHYA</span>
                         </Link>
 
                         {/* Desktop Menu */}
