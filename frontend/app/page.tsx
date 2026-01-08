@@ -172,9 +172,30 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="relative z-10 py-8 text-center border-t border-white/5 bg-black/20">
-        <div className="text-xs text-muted-foreground font-mono tracking-wider">
-          <p className="mb-2">EST. 2026 • MSM VALAVANNUR</p>
-          <div className="flex justify-center gap-4 opacity-50">
+        <div className="text-xs text-muted-foreground font-mono tracking-wider space-y-1">
+          <p>
+            EST. 2026 •{' '}
+            <a
+              href="https://linktr.ee/msmvalavannur"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors underline decoration-primary/30 underline-offset-4"
+            >
+              MSM VALAVANNUR
+            </a>
+          </p>
+          <p className="opacity-70">
+            Developer:{' '}
+            <a
+              href="https://www.instagram.com/hadihunnas/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors underline decoration-primary/30 underline-offset-4"
+            >
+              Hunnas
+            </a>
+          </p>
+          <div className="flex justify-center gap-4 opacity-50 pt-2">
             <span>BUILT WITH PRECISION</span>
             <span>•</span>
             <span>HONOR THE CRAFT</span>
