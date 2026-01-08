@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sparkles, LogOut, Home, Menu, X, Scroll } from 'lucide-react';
+import { Sparkles, LogOut, Home, Menu, X, Scroll, Trophy } from 'lucide-react';
 
 export default function DashboardLayout({
     children,
@@ -54,6 +54,12 @@ export default function DashboardLayout({
                                     Dashboard
                                 </Button>
                             </Link>
+                            <Link href="/dashboard/achievements">
+                                <Button variant="ghost" size="sm" className="gap-2">
+                                    <Trophy className="h-4 w-4" />
+                                    Honors
+                                </Button>
+                            </Link>
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -81,6 +87,12 @@ export default function DashboardLayout({
                                 <Button variant="ghost" className="w-full justify-start gap-2">
                                     <Home className="h-4 w-4" />
                                     Dashboard
+                                </Button>
+                            </Link>
+                            <Link href="/dashboard/achievements">
+                                <Button variant="ghost" className="w-full justify-start gap-2">
+                                    <Trophy className="h-4 w-4" />
+                                    Honors
                                 </Button>
                             </Link>
                             <Button

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Achievement } from '@prisma/client';
 
 @Injectable()
 export class ProgressService {
@@ -7,11 +8,58 @@ export class ProgressService {
 
     // Mark class as watched
     async markClassWatched(userId: string, classId: string, isWatched: boolean = true) {
-        return this.prisma.progress.upsert({
+        const result = await this.prisma.progress.upsert({
             where: { userId_classId: { userId, classId } },
             update: { isWatched, watchedAt: isWatched ? new Date() : null },
             create: { userId, classId, isWatched, watchedAt: isWatched ? new Date() : null },
         });
+
+        if (isWatched) {
+            await this.checkAndUnlockAchievements(userId);
+        }
+
+        return result;
+    }
+
+    // Check and unlock achievements dynamically
+    async checkAndUnlockAchievements(userId: string) {
+        const stats = await this.getUserStats(userId);
+        const allAchievements = await this.prisma.achievement.findMany();
+        const userAchievements = await this.prisma.userAchievement.findMany({
+            where: { userId },
+            select: { achievementId: true }
+        });
+        const unlockedIds = new Set(userAchievements.map(ua => ua.achievementId));
+
+        const newUnlocks: Achievement[] = [];
+
+        for (const ach of allAchievements) {
+            if (unlockedIds.has(ach.id)) continue;
+
+            let unlocked = false;
+
+            switch (ach.type) {
+                case 'STREAK':
+                    if (stats.streak >= ach.requirement) unlocked = true;
+                    break;
+                case 'WATCH_COUNT':
+                    if (stats.watchedCount >= ach.requirement) unlocked = true;
+                    break;
+                case 'XP_MILESTONE':
+                    if (stats.xp >= ach.requirement) unlocked = true;
+                    break;
+                // Add more cases as needed
+            }
+
+            if (unlocked) {
+                await this.prisma.userAchievement.create({
+                    data: { userId, achievementId: ach.id }
+                });
+                newUnlocks.push(ach);
+            }
+        }
+
+        return newUnlocks;
     }
 
     // Get all progress for a user
@@ -137,7 +185,7 @@ export class ProgressService {
         }));
     }
 
-    // Get user stats (XP, streak, rank, achievements)
+    // Get user stats (XP, streak, rank, achievements, tier)
     async getUserStats(userId: string) {
         const xp = await this.calculateXP(userId);
         const streak = await this.calculateStreak(userId);
@@ -149,15 +197,36 @@ export class ProgressService {
         });
         const totalClasses = await this.prisma.class.count();
 
-        // Calculate achievements
-        const achievements = [
-            { id: 'first_steps', icon: '🎯', name: 'First Steps', desc: 'Joined IHYA', unlocked: true },
-            { id: 'on_fire', icon: '🔥', name: 'On Fire', desc: '5 day streak', unlocked: streak >= 5 },
-            { id: 'bookworm', icon: '📚', name: 'Bookworm', desc: 'Watch 10 classes', unlocked: watchedCount >= 10 },
-            { id: 'champion', icon: '🏆', name: 'Champion', desc: 'Complete all courses', unlocked: watchedCount >= totalClasses && totalClasses > 0 },
-            { id: 'dedicated', icon: '💪', name: 'Dedicated', desc: '7 day streak', unlocked: streak >= 7 },
-            { id: 'top_3', icon: '🥇', name: 'Top 3', desc: 'Reach top 3 on leaderboard', unlocked: userRank <= 3 },
-        ];
+        // Calculate Tier
+        let tier = 'BRONZE';
+        let nextTierXp = 500;
+        if (xp >= 5000) { tier = 'DIAMOND'; nextTierXp = 10000; } // Max tier
+        else if (xp >= 2500) { tier = 'PLATINUM'; nextTierXp = 5000; }
+        else if (xp >= 1000) { tier = 'GOLD'; nextTierXp = 2500; }
+        else if (xp >= 500) { tier = 'SILVER'; nextTierXp = 1000; }
+
+        // Update user tier if changed (OPTIMIZATION: simple update every time or check first)
+        // We'll trust Prisma to handle basic updates efficiently or checks could be added
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { tier: tier as any }
+        });
+
+        // Fetch dynamic achievements
+        const allAchievements = await this.prisma.achievement.findMany();
+        const userAchievementsMap = await this.prisma.userAchievement.findMany({
+            where: { userId },
+            select: { achievementId: true, unlockedAt: true }
+        });
+        const unlockedSet = new Set(userAchievementsMap.map(ua => ua.achievementId));
+
+        const achievements = allAchievements.map(ach => ({
+            id: ach.id,
+            icon: ach.icon,
+            name: ach.name,
+            desc: ach.description,
+            unlocked: unlockedSet.has(ach.id),
+        }));
 
         return {
             xp,
@@ -165,6 +234,8 @@ export class ProgressService {
             xpForNextLevel: 100 - (xp % 100),
             streak,
             rank: userRank,
+            tier,
+            nextTierXp,
             totalStudents: leaderboard.length,
             watchedCount,
             totalClasses,

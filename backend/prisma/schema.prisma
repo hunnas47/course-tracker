@@ -12,6 +12,14 @@ enum Role {
   ADMIN
 }
 
+enum Tier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
 enum SubjectName {
   AQEEDHA
   SELF_DEVELOPMENT
@@ -27,10 +35,12 @@ model User {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  tier         Tier     @default(BRONZE)
 
   progress         Progress[]
   assignmentScores AssignmentScore[]
   examScores       ExamScore[]
+  userAchievements UserAchievement[]
 }
 
 model Subject {
@@ -110,4 +120,35 @@ model ExamScore {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, examId])
+}
+
+enum AchievementType {
+  STREAK
+  WATCH_COUNT
+  COURSE_COMPLETE
+  XP_MILESTONE
+}
+
+model Achievement {
+  id          String          @id @default(uuid())
+  name        String
+  description String
+  icon        String
+  xpBonus     Int             @default(0)
+  type        AchievementType
+  requirement Int             // e.g. 5 (days), 10 (videos)
+  subjectId   String?         // Optional, for COURSE_COMPLETE
+  
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  unlockedAt    DateTime    @default(now())
+
+  @@unique([userId, achievementId])
 }

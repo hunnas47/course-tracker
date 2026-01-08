@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "Tier" AS ENUM ('BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND');
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "tier" "Tier" NOT NULL DEFAULT 'BRONZE';

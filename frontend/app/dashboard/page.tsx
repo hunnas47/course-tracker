@@ -28,6 +28,8 @@ interface UserStats {
     xpForNextLevel: number;
     streak: number;
     rank: number;
+    tier: string;
+    nextTierXp: number;
     totalStudents: number;
     watchedCount: number;
     totalClasses: number;
@@ -57,6 +59,14 @@ export default function StudentDashboard() {
     const [username, setUsername] = useState('Student');
     const [loading, setLoading] = useState(true);
 
+    const tierColors: Record<string, string> = {
+        BRONZE: 'text-orange-400',
+        SILVER: 'text-zinc-400',
+        GOLD: 'text-yellow-400',
+        PLATINUM: 'text-cyan-400',
+        DIAMOND: 'text-purple-400',
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -84,7 +94,7 @@ export default function StudentDashboard() {
                 setStats({
                     xp: 0, level: 1, xpForNextLevel: 100, streak: 0,
                     rank: 1, totalStudents: 1, watchedCount: 0, totalClasses: 0,
-                    percentage: 0, achievements: []
+                    percentage: 0, achievements: [], tier: 'BRONZE', nextTierXp: 500
                 });
             } finally {
                 setLoading(false);
@@ -130,6 +140,14 @@ export default function StudentDashboard() {
             <div className="border-b border-white/5 bg-card/30">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-end max-w-6xl">
                     <div className="flex items-center gap-6 text-sm font-mono">
+                        {/* League Badge */}
+                        <div className="flex items-center gap-2 px-3 py-1 rounded-sm bg-white/5 border border-white/10">
+                            <Trophy className={`h-4 w-4 ${tierColors[stats?.tier || 'BRONZE']}`} />
+                            <span className={`font-bold ${tierColors[stats?.tier || 'BRONZE']}`}>{stats?.tier} LEAGUE</span>
+                        </div>
+
+                        <div className="h-4 w-px bg-white/10"></div>
+
                         <div className="flex items-center gap-2 text-muted-foreground">
                             <Flame className="h-4 w-4 text-orange-600" />
                             <span className="text-foreground font-bold">{stats?.streak || 0}</span>
@@ -158,11 +176,17 @@ export default function StudentDashboard() {
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-primary/10 transition-colors"></div>
 
                         <div className="relative z-10">
-                            <h1 className="text-3xl font-serif font-bold text-white mb-2">
-                                Salaam, <span className="text-primary">{username}</span>.
-                            </h1>
+                            <div className="flex justify-between items-start mb-4">
+                                <h1 className="text-3xl font-serif font-bold text-white mb-2">
+                                    Salaam, <span className="text-primary">{username}</span>.
+                                </h1>
+                                <div className={`px-4 py-1 rounded-full border border-white/10 bg-black/20 text-xs font-bold tracking-widest ${tierColors[stats?.tier || 'BRONZE']}`}>
+                                    {stats?.tier} TIER
+                                </div>
+                            </div>
+
                             <p className="text-muted-foreground max-w-md mb-6">
-                                Your pursuit of knowledge continues. You are <span className="text-white font-bold">{stats?.xpForNextLevel} XP</span> away from the next rank.
+                                Your pursuit of knowledge continues. Next League at <span className="text-white font-bold">{stats?.nextTierXp} XP</span>.
                             </p>
 
                             <div className="space-y-4">

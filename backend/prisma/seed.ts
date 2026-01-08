@@ -64,7 +64,59 @@ async function main() {
         }
     }
 
-    console.log('🎉 Seed completed!');
+    // Create Achievements
+    const achievements = [
+        {
+            name: 'First Steps',
+            description: 'Joined IHYA',
+            icon: '🎯',
+            xpBonus: 0,
+            type: 'XP_MILESTONE', // Using as a "joined" marker for now, or could use a new JOINED type. Let's use XP_MILESTONE 0.
+            requirement: 0,
+        },
+        {
+            name: 'On Fire',
+            description: '5 day streak',
+            icon: '🔥',
+            xpBonus: 50,
+            type: 'STREAK',
+            requirement: 5,
+        },
+        {
+            name: 'Dedicated',
+            description: '7 day streak',
+            icon: '💪',
+            xpBonus: 100,
+            type: 'STREAK',
+            requirement: 7,
+        },
+        {
+            name: 'Bookworm',
+            description: 'Watch 10 classes',
+            icon: '📚',
+            xpBonus: 100,
+            type: 'WATCH_COUNT',
+            requirement: 10,
+        },
+        // We'll skip COURSE_COMPLETE and TOP_3 for now as they require subjectId or complex logic not yet in seed
+    ];
+
+    for (const ach of achievements) {
+        await prisma.achievement.upsert({
+            where: { id: ach.name.toLowerCase().replace(' ', '_') }, // Using name-based ID generation for consistency during seeding
+            update: {},
+            create: {
+                id: ach.name.toLowerCase().replace(' ', '_'),
+                name: ach.name,
+                description: ach.description,
+                icon: ach.icon,
+                xpBonus: ach.xpBonus,
+                type: ach.type as any,
+                requirement: ach.requirement,
+            },
+        });
+    }
+    console.log('✅ Achievements seeded');
 }
 
 main()
