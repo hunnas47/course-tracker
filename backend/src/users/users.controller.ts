@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Put, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -28,6 +28,13 @@ export class UsersController {
         return this.usersService.create(data);
     }
 
+    @Put('change-password')
+    async changePassword(@Body() data: any, @Request() req: any) {
+        // Note: We use @Request() to get the user from the JWT guard
+        // The guard attaches the user payload to req.user
+        return this.usersService.changePassword(req.user.userId, data.oldPassword, data.newPassword);
+    }
+
     @Put(':id')
     @Roles(Role.ADMIN)
     update(
@@ -48,4 +55,6 @@ export class UsersController {
     bulkDelete(@Body() data: { ids: string[] }) {
         return this.usersService.bulkDelete(data.ids);
     }
+
+
 }

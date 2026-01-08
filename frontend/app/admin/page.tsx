@@ -14,7 +14,7 @@ import { Skeleton, SkeletonTable, SkeletonListItem } from '@/components/ui/skele
 import {
     Users, BookOpen, BarChart3,
     Sparkles, LogOut, Plus, CheckCircle2, AlertCircle,
-    User, Pencil, Trash2, Save, X, TrendingUp, Activity, Target
+    User, Pencil, Trash2, Save, X, TrendingUp, Activity, Target, KeyRound
 } from 'lucide-react';
 
 interface Student {
@@ -57,6 +57,9 @@ export default function AdminDashboard() {
     const [editingStudent, setEditingStudent] = useState<string | null>(null);
     const [editStudentData, setEditStudentData] = useState({ username: '', password: '', mentorName: '' });
     const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
+
+    // Settings
+    const [passwordData, setPasswordData] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
 
     // Classes
     const [classes, setClasses] = useState<ClassItem[]>([]);
@@ -297,6 +300,26 @@ export default function AdminDashboard() {
         }
     };
 
+
+
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            showMessage('error', 'New passwords do not match');
+            return;
+        }
+        try {
+            await api.put('/users/change-password', {
+                oldPassword: passwordData.oldPassword,
+                newPassword: passwordData.newPassword
+            });
+            showMessage('success', 'Password updated successfully! 🔒');
+            setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+        } catch (error: any) {
+            showMessage('error', error.response?.data?.message || 'Failed to update password');
+        }
+    };
+
     const handleLogout = async () => {
         try {
             await api.post('/auth/logout');
@@ -427,7 +450,7 @@ export default function AdminDashboard() {
                 <h1 className="text-3xl font-bold gradient-text">Admin Dashboard</h1>
 
                 <Tabs defaultValue="users" className="space-y-6">
-                    <TabsList className="glass border-white/10 p-1 rounded-xl w-full grid grid-cols-3 h-auto">
+                    <TabsList className="glass border-white/10 p-1 rounded-xl w-full grid grid-cols-4 h-auto">
                         <TabsTrigger value="users" className="gap-2 rounded-lg data-[state=active]:neon-glow py-2">
                             <Users className="h-4 w-4" /> <span className="hidden sm:inline">Users</span>
                         </TabsTrigger>
@@ -436,6 +459,9 @@ export default function AdminDashboard() {
                         </TabsTrigger>
                         <TabsTrigger value="analytics" className="gap-2 rounded-lg data-[state=active]:neon-glow py-2">
                             <BarChart3 className="h-4 w-4" /> <span className="hidden sm:inline">Analytics</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="settings" className="gap-2 rounded-lg data-[state=active]:neon-glow py-2">
+                            <KeyRound className="h-4 w-4" /> <span className="hidden sm:inline">Settings</span>
                         </TabsTrigger>
                     </TabsList>
 
@@ -924,6 +950,59 @@ export default function AdminDashboard() {
                                         <p className="text-muted-foreground col-span-5 text-center py-8">No performers yet</p>
                                     )}
                                 </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Settings Tab */}
+                    <TabsContent value="settings" className="space-y-6">
+                        <Card className="glass border-white/10 max-w-md mx-auto">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <KeyRound className="h-5 w-5 text-purple-400" />
+                                    Change Password
+                                </CardTitle>
+                                <CardDescription>Update your personal security credentials.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <form onSubmit={handleChangePassword} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label>Current Password</Label>
+                                        <Input
+                                            type="password"
+                                            value={passwordData.oldPassword}
+                                            onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
+                                            placeholder="••••••••"
+                                            required
+                                            className="glass border-white/10"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>New Password</Label>
+                                        <Input
+                                            type="password"
+                                            value={passwordData.newPassword}
+                                            onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                                            placeholder="••••••••"
+                                            required
+                                            className="glass border-white/10"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Confirm New Password</Label>
+                                        <Input
+                                            type="password"
+                                            value={passwordData.confirmPassword}
+                                            onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                                            placeholder="••••••••"
+                                            required
+                                            className="glass border-white/10"
+                                        />
+                                    </div>
+                                    <Button type="submit" className="w-full neon-glow">
+                                        Update Password
+                                    </Button>
+                                </form>
                             </CardContent>
                         </Card>
                     </TabsContent>

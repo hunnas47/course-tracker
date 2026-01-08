@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { Sparkles, LogOut, Home, Menu, X, Scroll, Trophy } from 'lucide-react';
+import { Sparkles, LogOut, Home, Menu, X, Scroll, Trophy, Settings } from 'lucide-react';
 
 export default function DashboardLayout({
     children,
@@ -67,6 +67,12 @@ export default function DashboardLayout({
                                     Honors
                                 </Button>
                             </Link>
+                            <Link href="/dashboard/settings">
+                                <Button variant="ghost" size="sm" className="gap-2">
+                                    <Settings className="h-4 w-4" />
+                                    Settings
+                                </Button>
+                            </Link>
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -100,6 +106,12 @@ export default function DashboardLayout({
                                 <Button variant="ghost" className="w-full justify-start gap-2">
                                     <Trophy className="h-4 w-4" />
                                     Honors
+                                </Button>
+                            </Link>
+                            <Link href="/dashboard/settings">
+                                <Button variant="ghost" className="w-full justify-start gap-2">
+                                    <Settings className="h-4 w-4" />
+                                    Settings
                                 </Button>
                             </Link>
                             <Button

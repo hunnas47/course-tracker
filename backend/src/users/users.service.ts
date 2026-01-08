@@ -87,4 +87,24 @@ export class UsersService {
 
         return this.prisma.user.deleteMany({ where: { id: { in: ids } } });
     }
+
+    async changePassword(userId: string, oldPassword: string, newPassword: string) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
+        if (!isMatch) {
+            throw new Error('Invalid current password');
+        }
+
+        const salt = await bcrypt.genSalt();
+        const passwordHash = await bcrypt.hash(newPassword, salt);
+
+        return this.prisma.user.update({
+            where: { id: userId },
+            data: { passwordHash },
+        });
+    }
 }
