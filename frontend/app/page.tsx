@@ -170,7 +170,27 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="relative z-10 py-8 text-center text-sm text-muted-foreground border-t border-white/5">
-        <p>© {new Date().getFullYear()} IHYA Platform • Built for the next generation 💜</p>
+        <p>
+          © 2026{' '}
+          <a
+            href="https://linktr.ee/msmvalavannur"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-purple-400 transition-colors"
+          >
+            MSM Valavannur
+          </a>
+          {' '}• Built by{' '}
+          <a
+            href="https://www.instagram.com/hadihunnas/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-purple-400 transition-colors font-medium"
+          >
+            Hunnas
+          </a>
+          {' '}with ❤️
+        </p>
       </footer>
     </div>
   );

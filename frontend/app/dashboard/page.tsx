@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import api from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -160,6 +161,12 @@ export default function StudentDashboard() {
         AQEEDHA: 'from-purple-500 to-indigo-600',
         SELF_DEVELOPMENT: 'from-pink-500 to-rose-600',
         TAFSEER: 'from-cyan-500 to-blue-600',
+    };
+
+    const subjectImages: Record<string, string> = {
+        AQEEDHA: '/aqeedha.webp',
+        SELF_DEVELOPMENT: '/self_dev.webp',
+        TAFSEER: '/tafseer.webp',
     };
 
     return (
@@ -321,10 +328,19 @@ export default function StudentDashboard() {
                             key={subject.id}
                             className="glass overflow-hidden hover:scale-[1.02] transition-all duration-300 group cursor-pointer"
                         >
-                            {/* Gradient Header */}
-                            <div className={`h-24 bg-gradient-to-br ${subjectColors[subject.name] || 'from-purple-500 to-pink-500'} flex items-center justify-center relative`}>
-                                <span className="text-5xl">{subjectIcons[subject.name] || '📚'}</span>
-                                <div className="absolute top-3 right-3 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold">
+                            {/* Course Preview Image */}
+                            <div className="h-40 relative overflow-hidden">
+                                <Image
+                                    src={subjectImages[subject.name] || '/aqeedha.png'}
+                                    alt={subject.name.replace('_', ' ')}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 33vw"
+                                    quality={75}
+                                    priority={false}
+                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold">
                                     {subject.watchedClasses}/{subject.totalClasses} classes
                                 </div>
                             </div>
