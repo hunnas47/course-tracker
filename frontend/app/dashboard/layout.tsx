@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import api from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Sparkles, LogOut, Home, Menu, X, Scroll, Trophy } from 'lucide-react';
 

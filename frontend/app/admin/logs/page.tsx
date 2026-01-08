@@ -107,10 +107,10 @@ export default function AdminLogsPage() {
 
                         <div className="flex items-center gap-2">
                             <Button variant="ghost" size="sm" onClick={() => router.push('/admin')} className="gap-2 text-muted-foreground hover:text-white">
-                                <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+                                <ArrowLeft className="h-4 w-4" /> <span className="hidden sm:inline">Back</span>
                             </Button>
                             <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2 border-white/10 hover:bg-white/5">
-                                <LogOut className="h-4 w-4" /> Logout
+                                <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Logout</span>
                             </Button>
                         </div>
                     </div>
@@ -129,7 +129,7 @@ export default function AdminLogsPage() {
                 </div>
 
                 <Card className="bg-card/50 border-white/5 backdrop-blur-sm shadow-xl overflow-hidden">
-                    <div className="p-0">
+                    <div className="p-0 overflow-x-auto">
                         <Table>
                             <TableHeader>
                                 <TableRow className="border-white/5 bg-white/5 hover:bg-white/5">

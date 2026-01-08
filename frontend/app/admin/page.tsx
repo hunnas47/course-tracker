@@ -402,10 +402,10 @@ export default function AdminDashboard() {
                         </div>
                         <div className="flex items-center gap-2">
                             <Button variant="outline" size="sm" onClick={() => router.push('/admin/logs')} className="gap-2 border-white/10 hover:bg-white/5">
-                                <Activity className="h-4 w-4" /> Logs
+                                <Activity className="h-4 w-4" /> <span className="hidden sm:inline">Logs</span>
                             </Button>
                             <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2 border-white/10 hover:bg-white/5">
-                                <LogOut className="h-4 w-4" /> Logout
+                                <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Logout</span>
                             </Button>
                         </div>
                     </div>
@@ -427,15 +427,15 @@ export default function AdminDashboard() {
                 <h1 className="text-3xl font-bold gradient-text">Admin Dashboard</h1>
 
                 <Tabs defaultValue="users" className="space-y-6">
-                    <TabsList className="glass border-white/10 p-1 rounded-xl">
-                        <TabsTrigger value="users" className="gap-2 rounded-lg data-[state=active]:neon-glow">
-                            <Users className="h-4 w-4" /> Users
+                    <TabsList className="glass border-white/10 p-1 rounded-xl w-full grid grid-cols-3 h-auto">
+                        <TabsTrigger value="users" className="gap-2 rounded-lg data-[state=active]:neon-glow py-2">
+                            <Users className="h-4 w-4" /> <span className="hidden sm:inline">Users</span>
                         </TabsTrigger>
-                        <TabsTrigger value="courses" className="gap-2 rounded-lg data-[state=active]:neon-glow">
-                            <BookOpen className="h-4 w-4" /> Classes
+                        <TabsTrigger value="courses" className="gap-2 rounded-lg data-[state=active]:neon-glow py-2">
+                            <BookOpen className="h-4 w-4" /> <span className="hidden sm:inline">Classes</span>
                         </TabsTrigger>
-                        <TabsTrigger value="analytics" className="gap-2 rounded-lg data-[state=active]:neon-glow">
-                            <BarChart3 className="h-4 w-4" /> Analytics
+                        <TabsTrigger value="analytics" className="gap-2 rounded-lg data-[state=active]:neon-glow py-2">
+                            <BarChart3 className="h-4 w-4" /> <span className="hidden sm:inline">Analytics</span>
                         </TabsTrigger>
                     </TabsList>
 
@@ -701,6 +701,7 @@ export default function AdminDashboard() {
                                                 <Checkbox
                                                     checked={selectedClasses.has(cls.id)}
                                                     onCheckedChange={() => toggleClassSelection(cls.id)}
+                                                    className="mt-1"
                                                 />
                                                 <div className="flex flex-col gap-1">
                                                     <Button
@@ -723,42 +724,48 @@ export default function AdminDashboard() {
                                                     </Button>
                                                 </div>
 
-                                                {editingClass === cls.id ? (
-                                                    <div className="flex-1 flex gap-2 items-center">
-                                                        <Input
-                                                            value={editClassData.title}
-                                                            onChange={(e) => setEditClassData({ ...editClassData, title: e.target.value })}
-                                                            className="glass border-white/10"
-                                                        />
-                                                        <Input
-                                                            type="date"
-                                                            value={editClassData.date}
-                                                            onChange={(e) => setEditClassData({ ...editClassData, date: e.target.value })}
-                                                            className="glass border-white/10 w-40"
-                                                        />
-                                                        <Button size="sm" onClick={() => handleUpdateClass(cls.id)}>
-                                                            <Save className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button size="sm" variant="ghost" onClick={() => setEditingClass(null)}>
-                                                            <X className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
-                                                ) : (
-                                                    <>
-                                                        <div className="flex-1">
-                                                            <div className="font-medium">{cls.title}</div>
-                                                            <div className="text-xs text-muted-foreground">
-                                                                {new Date(cls.date).toLocaleDateString()}
+                                                {/* Mobile wrapper for stacking controls if needed */}
+                                                <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 w-full min-w-0">
+
+                                                    {editingClass === cls.id ? (
+                                                        <div className="flex-1 flex flex-col sm:flex-row gap-2 sm:items-center">
+                                                            <Input
+                                                                value={editClassData.title}
+                                                                onChange={(e) => setEditClassData({ ...editClassData, title: e.target.value })}
+                                                                className="glass border-white/10 w-full"
+                                                            />
+                                                            <Input
+                                                                type="date"
+                                                                value={editClassData.date}
+                                                                onChange={(e) => setEditClassData({ ...editClassData, date: e.target.value })}
+                                                                className="glass border-white/10 w-full sm:w-40"
+                                                            />
+                                                            <div className="flex gap-2">
+                                                                <Button size="sm" onClick={() => handleUpdateClass(cls.id)}>
+                                                                    <Save className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button size="sm" variant="ghost" onClick={() => setEditingClass(null)}>
+                                                                    <X className="h-4 w-4" />
+                                                                </Button>
                                                             </div>
                                                         </div>
-                                                        <Button size="icon" variant="ghost" onClick={() => startEditClass(cls)}>
-                                                            <Pencil className="h-4 w-4" />
-                                                        </Button>
-                                                        <Button size="icon" variant="ghost" onClick={() => handleDeleteClass(cls.id)} className="text-red-400">
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </>
-                                                )}
+                                                    ) : (
+                                                        <>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="font-medium truncate">{cls.title}</div>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    {new Date(cls.date).toLocaleDateString()}
+                                                                </div>
+                                                            </div>
+                                                            <Button size="icon" variant="ghost" onClick={() => startEditClass(cls)}>
+                                                                <Pencil className="h-4 w-4" />
+                                                            </Button>
+                                                            <Button size="icon" variant="ghost" onClick={() => handleDeleteClass(cls.id)} className="text-red-400">
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>

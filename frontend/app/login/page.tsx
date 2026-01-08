@@ -45,7 +45,7 @@ export default function LoginPage() {
         <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 relative">
 
             {/* Back Button */}
-            <Link href="/" className="absolute top-8 left-8 z-10">
+            <Link href="/" className="absolute top-4 left-4 md:top-8 md:left-8 z-10 text-white">
                 <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-white uppercase text-xs tracking-widest hover:bg-transparent">
                     <ArrowLeft className="h-4 w-4" />
                     Return
