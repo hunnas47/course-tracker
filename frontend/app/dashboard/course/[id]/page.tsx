@@ -115,12 +115,12 @@ export default function CoursePage() {
                 </div>
 
                 {/* Progress Card Skeleton */}
-                <div className="glass rounded-2xl p-6 space-y-4">
+                <div className="monolith-card p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <Skeleton className="h-5 w-32" />
                         <Skeleton className="h-8 w-16" />
                     </div>
-                    <Skeleton className="h-4 w-full rounded-full" />
+                    <Skeleton className="h-4 w-full rounded-sm" />
                 </div>
 
                 {/* Classes List Skeleton */}
@@ -128,14 +128,14 @@ export default function CoursePage() {
                     <Skeleton className="h-6 w-28" />
                     <div className="space-y-3">
                         {[1, 2, 3, 4, 5].map(i => (
-                            <div key={i} className="glass rounded-xl p-4">
+                            <div key={i} className="monolith-card p-4">
                                 <div className="flex items-center gap-4">
-                                    <Skeleton className="w-12 h-12 rounded-full" />
+                                    <Skeleton className="w-12 h-12 rounded-sm" />
                                     <div className="flex-1 space-y-2">
                                         <Skeleton className="h-5 w-3/4" />
                                         <Skeleton className="h-3 w-24" />
                                     </div>
-                                    <Skeleton className="h-9 w-28 rounded-lg" />
+                                    <Skeleton className="h-9 w-28 rounded-sm" />
                                 </div>
                             </div>
                         ))}
@@ -153,7 +153,7 @@ export default function CoursePage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => router.push('/dashboard')}
-                    className="glass rounded-full"
+                    className="btn-outline rounded-full w-10 h-10 border-white/10 hover:border-primary/50 text-muted-foreground hover:text-white"
                 >
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
@@ -171,22 +171,22 @@ export default function CoursePage() {
             </div>
 
             {/* Progress Card */}
-            <div className="glass rounded-2xl p-6 space-y-4">
+            <div className="monolith-card p-6 space-y-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Trophy className="h-5 w-5 text-yellow-400" />
-                        <span className="font-semibold">Course Progress</span>
+                        <Trophy className="h-5 w-5 text-primary" />
+                        <span className="font-semibold text-white">Course Progress</span>
                     </div>
-                    <span className="text-2xl font-bold gradient-text">{progress}%</span>
+                    <span className="text-2xl font-serif font-bold text-primary">{progress}%</span>
                 </div>
-                <div className="h-4 rounded-full overflow-hidden bg-muted">
+                <div className="h-4 rounded-sm overflow-hidden bg-white/5 border border-white/5">
                     <div
-                        className="h-full xp-gradient transition-all duration-700"
+                        className="h-full bg-primary transition-all duration-700 ease-out"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
                 {progress === 100 && (
-                    <div className="flex items-center justify-center gap-2 text-green-400 font-semibold animate-pulse-glow">
+                    <div className="flex items-center justify-center gap-2 text-primary font-semibold animate-pulse">
                         <Sparkles className="h-5 w-5" />
                         Course Completed! +100 XP Bonus!
                     </div>
@@ -195,13 +195,13 @@ export default function CoursePage() {
 
             {/* Classes List */}
             <div className="space-y-4">
-                <h2 className="text-lg font-bold flex items-center gap-2">
-                    <Video className="h-5 w-5 text-purple-400" />
+                <h2 className="text-lg font-bold flex items-center gap-2 text-white">
+                    <Video className="h-5 w-5 text-primary" />
                     Classes ({classes.length})
                 </h2>
 
                 {classes.length === 0 ? (
-                    <div className="glass rounded-2xl p-8 text-center text-muted-foreground">
+                    <div className="monolith-card p-8 text-center text-muted-foreground">
                         No classes added yet. Ask your admin to add classes.
                     </div>
                 ) : (
@@ -213,38 +213,38 @@ export default function CoursePage() {
                             return (
                                 <div
                                     key={c.id}
-                                    className={`glass rounded-xl p-4 transition-all ${c.isWatched
-                                        ? 'border-green-500/30 bg-green-500/5'
+                                    className={`monolith-card p-4 transition-all ${c.isWatched
+                                        ? 'border-primary/40 bg-primary/5'
                                         : isLocked
                                             ? 'opacity-50'
-                                            : 'hover:scale-[1.01]'
+                                            : 'hover:border-primary/50'
                                         }`}
                                 >
                                     <div className="flex items-center gap-4">
                                         {/* Status Icon */}
-                                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${c.isWatched
-                                            ? 'bg-green-500/20'
+                                        <div className={`w-12 h-12 rounded-sm flex items-center justify-center border border-white/5 ${c.isWatched
+                                            ? 'bg-primary/20 text-primary'
                                             : isLocked
-                                                ? 'bg-muted'
-                                                : 'bg-purple-500/20'
+                                                ? 'bg-muted text-muted-foreground'
+                                                : 'bg-card text-muted-foreground'
                                             }`}>
                                             {c.isWatched ? (
-                                                <CheckCircle2 className="h-6 w-6 text-green-400" />
+                                                <CheckCircle2 className="h-6 w-6" />
                                             ) : isLocked ? (
-                                                <Lock className="h-5 w-5 text-muted-foreground" />
+                                                <Lock className="h-5 w-5" />
                                             ) : (
-                                                <Circle className="h-6 w-6 text-purple-400" />
+                                                <Circle className="h-6 w-6" />
                                             )}
                                         </div>
 
                                         {/* Content */}
                                         <div className="flex-1 min-w-0">
-                                            <div className="font-semibold truncate">{c.title}</div>
-                                            <div className="text-xs text-muted-foreground flex items-center gap-2">
+                                            <div className={`font-semibold truncate ${c.isWatched ? 'text-white' : 'text-zinc-300'}`}>{c.title}</div>
+                                            <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1 font-mono uppercase tracking-wider">
                                                 <Calendar className="h-3 w-3" />
                                                 {c.date}
                                                 {c.isWatched && (
-                                                    <span className="text-green-400 flex items-center gap-1">
+                                                    <span className="text-primary flex items-center gap-1 ml-2">
                                                         <Zap className="h-3 w-3" /> +25 XP
                                                     </span>
                                                 )}
@@ -258,12 +258,14 @@ export default function CoursePage() {
                                                 size="sm"
                                                 onClick={() => toggleWatched(c.id, c.isWatched)}
                                                 disabled={updating === c.id}
-                                                className={c.isWatched ? 'glass' : 'neon-glow'}
+                                                className={c.isWatched
+                                                    ? 'btn-outline border-white/10 text-muted-foreground hover:text-white hover:border-white/30'
+                                                    : 'btn-primary'}
                                             >
                                                 {updating === c.id ? (
                                                     'Saving...'
                                                 ) : c.isWatched ? (
-                                                    'Completed ✓'
+                                                    'Completed'
                                                 ) : (
                                                     'Mark Complete'
                                                 )}
@@ -279,11 +281,11 @@ export default function CoursePage() {
 
             {/* Motivation Section */}
             {progress < 100 && classes.length > 0 && (
-                <div className="glass rounded-2xl p-6 text-center space-y-2">
-                    <div className="text-4xl">💪</div>
-                    <p className="text-lg font-semibold">Keep going!</p>
+                <div className="monolith-card p-6 text-center space-y-2">
+                    <div className="text-4xl opacity-50">⚡</div>
+                    <p className="text-lg font-serif font-bold text-white">Keep climbing</p>
                     <p className="text-sm text-muted-foreground">
-                        Complete {classes.length - completedCount} more {classes.length - completedCount === 1 ? 'class' : 'classes'} to finish this course and earn a +100 XP bonus!
+                        Complete {classes.length - completedCount} more {classes.length - completedCount === 1 ? 'class' : 'classes'} to finish this course and earn a +100 XP bonus.
                     </p>
                 </div>
             )}
