@@ -41,6 +41,7 @@ model User {
   assignmentScores AssignmentScore[]
   examScores       ExamScore[]
   userAchievements UserAchievement[]
+  activityLogs     ActivityLog[]
 }
 
 model Subject {
@@ -151,4 +152,20 @@ model UserAchievement {
   unlockedAt    DateTime    @default(now())
 
   @@unique([userId, achievementId])
+}
+
+enum ActivityAction {
+  LOGIN
+  LOGOUT
+  WATCH_CLASS
+  UNWATCH_CLASS
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    ActivityAction
+  metadata  String?  // Optional details (e.g. "Watched Tafseer 1")
+  createdAt DateTime @default(now())
 }

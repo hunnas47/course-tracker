@@ -1,18 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Achievement } from '@prisma/client';
+import { Achievement, ActivityAction } from '@prisma/client';
+import { ActivityService } from '../activity/activity.service';
 
 @Injectable()
 export class ProgressService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        private activityService: ActivityService,
+    ) { }
 
     // Mark class as watched
     async markClassWatched(userId: string, classId: string, isWatched: boolean = true) {
+        // Fetch class title for metadata
+        const classEntity = await this.prisma.class.findUnique({ where: { id: classId } });
+        const metadata = classEntity ? `Class: ${classEntity.title}` : `Class ID: ${classId}`;
+
         const result = await this.prisma.progress.upsert({
             where: { userId_classId: { userId, classId } },
             update: { isWatched, watchedAt: isWatched ? new Date() : null },
             create: { userId, classId, isWatched, watchedAt: isWatched ? new Date() : null },
         });
+
+        // Log activity
+        this.activityService.logActivity(
+            userId,
+            isWatched ? ActivityAction.WATCH_CLASS : ActivityAction.UNWATCH_CLASS,
+            metadata
+        ).catch(err => console.error('Failed to log progress activity:', err));
 
         if (isWatched) {
             await this.checkAndUnlockAchievements(userId);

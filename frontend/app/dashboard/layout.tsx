@@ -21,9 +21,15 @@ export default function DashboardLayout({
         }
     }, [router]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        router.push('/');
+    const handleLogout = async () => {
+        try {
+            await api.post('/auth/logout');
+        } catch (error) {
+            console.error('Logout logging failed', error);
+        } finally {
+            localStorage.removeItem('token');
+            router.push('/');
+        }
     };
 
     return (

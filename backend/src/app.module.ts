@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { CoursesModule } from './courses/courses.module';
 import { MarksModule } from './marks/marks.module';
 import { ProgressModule } from './progress/progress.module';
+import { ActivityModule } from './activity/activity.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProgressModule } from './progress/progress.module';
     CoursesModule,
     MarksModule,
     ProgressModule,
+    ActivityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -5,11 +5,13 @@ import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
+import { ActivityModule } from '../activity/activity.module';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
+    ActivityModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'supersecretreplaceinproduction',
       signOptions: { expiresIn: '60m' },

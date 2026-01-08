@@ -297,9 +297,15 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        router.push('/');
+    const handleLogout = async () => {
+        try {
+            await api.post('/auth/logout');
+        } catch (error) {
+            console.error('Logout logging failed', error);
+        } finally {
+            localStorage.removeItem('token');
+            router.push('/');
+        }
     };
 
     const startEditStudent = (student: Student) => {
@@ -384,16 +390,24 @@ export default function AdminDashboard() {
             </div>
 
             {/* Header */}
-            <header className="sticky top-0 z-50 glass border-b border-white/5">
+            {/* Header */}
+            <header className="sticky top-0 z-50 backdrop-blur-md border-b border-white/5 bg-background/50">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center gap-2">
-                            <Sparkles className="h-6 w-6 text-purple-400" />
-                            <span className="text-xl font-bold gradient-text">IHYA Admin</span>
+                            <Sparkles className="h-6 w-6 text-primary" />
+                            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-amber-200">
+                                IHYA Admin
+                            </span>
                         </div>
-                        <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2 glass">
-                            <LogOut className="h-4 w-4" /> Logout
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline" size="sm" onClick={() => router.push('/admin/logs')} className="gap-2 border-white/10 hover:bg-white/5">
+                                <Activity className="h-4 w-4" /> Logs
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2 border-white/10 hover:bg-white/5">
+                                <LogOut className="h-4 w-4" /> Logout
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </header>

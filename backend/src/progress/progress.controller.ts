@@ -1,7 +1,8 @@
 import { Controller, Post, Get, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { ProgressService } from './progress.service';
 import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard, Roles } from '../auth/roles.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { Role } from '@prisma/client';
 
 @Controller('progress')
