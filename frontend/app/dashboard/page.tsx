@@ -139,28 +139,36 @@ export default function StudentDashboard() {
             {/* Top Bar / HUD - Non-sticky now to avoid collision */}
             <div className="border-b border-white/5 bg-card/30">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-end max-w-6xl">
-                    <div className="flex items-center gap-6 text-sm font-mono overflow-x-auto no-scrollbar w-full justify-start md:justify-end pb-2 md:pb-0">
+                    <div className="flex items-center gap-4 md:gap-6 text-sm font-mono w-full justify-between md:justify-end">
                         {/* League Badge */}
                         <div className="flex items-center gap-2 px-3 py-1 rounded-sm bg-white/5 border border-white/10 whitespace-nowrap">
                             <Trophy className={`h-4 w-4 ${tierColors[stats?.tier || 'BRONZE']}`} />
-                            <span className={`font-bold ${tierColors[stats?.tier || 'BRONZE']}`}>{stats?.tier} LEAGUE</span>
+                            <span className={`font-bold ${tierColors[stats?.tier || 'BRONZE']}`}>
+                                {stats?.tier} <span className="hidden md:inline">LEAGUE</span>
+                            </span>
                         </div>
 
-                        <div className="h-4 w-px bg-white/10 flex-shrink-0"></div>
+                        <div className="flex items-center gap-4 md:gap-6">
+                            <div className="h-4 w-px bg-white/10 flex-shrink-0 hidden md:block"></div>
 
-                        <div className="flex items-center gap-2 text-muted-foreground whitespace-nowrap">
-                            <Flame className="h-4 w-4 text-orange-600" />
-                            <span className="text-foreground font-bold">{stats?.streak || 0}</span>
-                        </div>
-                        <div className="h-4 w-px bg-white/10 flex-shrink-0"></div>
-                        <div className="flex items-center gap-2 text-muted-foreground whitespace-nowrap">
-                            <Target className="h-4 w-4 text-primary" />
-                            <span className="text-foreground font-bold">{stats?.xp || 0} XP</span>
-                        </div>
-                        <div className="h-4 w-px bg-white/10 flex-shrink-0"></div>
-                        <div className="flex items-center gap-2 whitespace-nowrap">
-                            <div className="w-6 h-6 bg-primary text-black font-bold flex items-center justify-center text-xs rounded-sm">
-                                {stats?.level || 1}
+                            <div className="flex items-center gap-2 text-muted-foreground whitespace-nowrap">
+                                <Flame className="h-4 w-4 text-orange-600" />
+                                <span className="text-foreground font-bold">{stats?.streak || 0}</span>
+                            </div>
+                            <div className="h-4 w-px bg-white/10 flex-shrink-0"></div>
+                            <div className="flex items-center gap-2 text-muted-foreground whitespace-nowrap">
+                                <Target className="h-4 w-4 text-primary" />
+                                <span className="text-foreground font-bold">{stats?.xp || 0} XP</span>
+                            </div>
+
+                            {/* Level - Hidden on mobile as per request to prevent wrapping */}
+                            <div className="hidden md:flex items-center gap-4 md:gap-6">
+                                <div className="h-4 w-px bg-white/10 flex-shrink-0"></div>
+                                <div className="flex items-center gap-2 whitespace-nowrap">
+                                    <div className="w-6 h-6 bg-primary text-black font-bold flex items-center justify-center text-xs rounded-sm">
+                                        {stats?.level || 1}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -176,11 +184,11 @@ export default function StudentDashboard() {
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-primary/10 transition-colors"></div>
 
                         <div className="relative z-10">
-                            <div className="flex justify-between items-start mb-4">
-                                <h1 className="text-3xl font-serif font-bold text-white mb-2">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                                <h1 className="text-3xl font-serif font-bold text-white">
                                     Salaam, <span className="text-primary">{username}</span>.
                                 </h1>
-                                <div className={`px-4 py-1 rounded-full border border-white/10 bg-black/20 text-xs font-bold tracking-widest ${tierColors[stats?.tier || 'BRONZE']}`}>
+                                <div className={`px-4 py-1 rounded-full border border-white/10 bg-black/20 text-xs font-bold tracking-widest w-fit ${tierColors[stats?.tier || 'BRONZE']}`}>
                                     {stats?.tier} TIER
                                 </div>
                             </div>

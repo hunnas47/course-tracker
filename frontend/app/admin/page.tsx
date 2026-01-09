@@ -450,7 +450,7 @@ export default function AdminDashboard() {
                 <h1 className="text-3xl font-bold gradient-text">Admin Dashboard</h1>
 
                 <Tabs defaultValue="users" className="space-y-6">
-                    <TabsList className="glass border-white/10 p-1 rounded-xl w-full grid grid-cols-4 h-auto">
+                    <TabsList className="glass border-white/10 p-1 rounded-xl w-full grid grid-cols-2 md:grid-cols-4 h-auto">
                         <TabsTrigger value="users" className="gap-2 rounded-lg data-[state=active]:neon-glow py-2">
                             <Users className="h-4 w-4" /> <span className="hidden sm:inline">Users</span>
                         </TabsTrigger>
