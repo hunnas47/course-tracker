@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '@prisma/client';
+import { CreateClassDto } from './dto/create-class.dto';
 
 @Controller('courses')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -18,7 +19,7 @@ export class CoursesController {
 
     @Post('class')
     @Roles(Role.ADMIN)
-    createClass(@Body() data: { title: string; date: string; subjectId: string }) {
+    createClass(@Body() data: CreateClassDto) {
         return this.coursesService.createClass(data);
     }
 

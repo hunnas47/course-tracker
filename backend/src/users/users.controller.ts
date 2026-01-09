@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '@prisma/client';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('users')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -24,7 +25,7 @@ export class UsersController {
 
     @Post()
     @Roles(Role.ADMIN)
-    create(@Body() data: any) {
+    create(@Body() data: CreateUserDto) {
         return this.usersService.create(data);
     }
 
