@@ -419,7 +419,7 @@ export default function AdminDashboard() {
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center gap-2">
                             <Sparkles className="h-6 w-6 text-primary" />
-                            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-amber-200">
+                            <span className="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-amber-200">
                                 IHYA Admin
                             </span>
                         </div>
@@ -583,7 +583,7 @@ export default function AdminDashboard() {
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <div className="flex items-center gap-4">
+                                                        <div className="flex items-center gap-2 md:gap-4">
                                                             <Checkbox
                                                                 checked={selectedStudents.has(student.id)}
                                                                 onCheckedChange={() => toggleStudentSelection(student.id)}
@@ -803,7 +803,7 @@ export default function AdminDashboard() {
                     {/* Analytics Tab */}
                     <TabsContent value="analytics" className="space-y-6">
                         {/* Overview Stats */}
-                        <div className="grid gap-6 md:grid-cols-4">
+                        <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
                             <Card className="glass border-white/10">
                                 <CardContent className="pt-6">
                                     <div className="flex items-center gap-4">
@@ -933,7 +933,7 @@ export default function AdminDashboard() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid gap-4 md:grid-cols-5">
+                                <div className="grid gap-4 grid-cols-2 md:grid-cols-5">
                                     {analytics?.topPerformers.map((performer, index) => (
                                         <div key={performer.username} className={`glass rounded-xl p-4 text-center space-y-2 ${index === 0 ? 'neon-glow' : ''}`}>
                                             <div className={`text-3xl ${index === 0 ? '' : 'opacity-70'}`}>
