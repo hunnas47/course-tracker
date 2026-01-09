@@ -10,8 +10,16 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton, SkeletonCourseCard, SkeletonListItem } from '@/components/ui/skeleton';
 import {
     BookOpen, Flame, Zap, Trophy, Star, Sparkles,
-    Target, ChevronRight, TrendingUp, Users, Scroll
+    Target, ChevronRight, TrendingUp, Users, Scroll, Megaphone, X
 } from 'lucide-react';
+
+interface Announcement {
+    id: string;
+    title: string;
+    message: string;
+    isActive: boolean;
+    createdAt: string;
+}
 
 interface SubjectProgress {
     id: string;
@@ -54,6 +62,7 @@ interface LeaderboardEntry {
 
 export default function StudentDashboard() {
     const [subjects, setSubjects] = useState<SubjectProgress[]>([]);
+    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [stats, setStats] = useState<UserStats | null>(null);
     const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
     const [username, setUsername] = useState('Student');
@@ -78,15 +87,17 @@ export default function StudentDashboard() {
                 }
 
                 // Fetch all data in parallel
-                const [subjectsRes, statsRes, leaderboardRes] = await Promise.all([
+                const [subjectsRes, statsRes, leaderboardRes, announcementsRes] = await Promise.all([
                     api.get('/progress/subjects'),
                     api.get('/progress/stats'),
                     api.get('/progress/leaderboard'),
+                    api.get('/announcements/active'),
                 ]);
 
                 setSubjects(subjectsRes.data);
                 setStats(statsRes.data);
                 setLeaderboard(leaderboardRes.data.slice(0, 5)); // Top 5
+                setAnnouncements(announcementsRes.data);
 
             } catch (err) {
                 console.error('Failed to fetch data:', err);
@@ -136,6 +147,28 @@ export default function StudentDashboard() {
 
     return (
         <div className="min-h-screen bg-background pb-12">
+
+            {/* Announcements Banner */}
+            {announcements.map((announcement) => (
+                <div key={announcement.id} className="bg-gradient-to-r from-purple-900/40 to-blue-900/40 border-b border-white/10 px-4 py-3 relative backdrop-blur-md">
+                    <div className="container mx-auto max-w-6xl flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <Megaphone className="h-5 w-5 text-yellow-400 shrink-0 animate-pulse" />
+                            <div>
+                                <p className="font-bold text-sm text-yellow-100">{announcement.title}</p>
+                                <p className="text-xs text-white/80">{announcement.message}</p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => setAnnouncements(prev => prev.filter(a => a.id !== announcement.id))}
+                            className="text-white/50 hover:text-white p-1"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    </div>
+                </div>
+            ))}
+
             {/* Top Bar / HUD - Non-sticky now to avoid collision */}
             <div className="border-b border-white/5 bg-card/30">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-end max-w-6xl">

@@ -14,7 +14,7 @@ import { Skeleton, SkeletonTable, SkeletonListItem } from '@/components/ui/skele
 import {
     Users, BookOpen, BarChart3,
     Sparkles, LogOut, Plus, CheckCircle2, AlertCircle,
-    User, Pencil, Trash2, Save, X, TrendingUp, Activity, Target, KeyRound
+    User, Pencil, Trash2, Save, X, TrendingUp, Activity, Target, KeyRound, Megaphone
 } from 'lucide-react';
 
 interface Student {
@@ -46,6 +46,14 @@ interface Analytics {
     };
 }
 
+interface Announcement {
+    id: string;
+    title: string;
+    message: string;
+    isActive: boolean;
+    createdAt: string;
+}
+
 export default function AdminDashboard() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
@@ -72,6 +80,10 @@ export default function AdminDashboard() {
     // Analytics
     const [analytics, setAnalytics] = useState<Analytics | null>(null);
 
+    // Announcements
+    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+    const [newAnnouncement, setNewAnnouncement] = useState({ title: '', message: '' });
+
     useEffect(() => {
         fetchAll();
     }, []);
@@ -79,7 +91,7 @@ export default function AdminDashboard() {
     const fetchAll = async () => {
         setLoading(true);
         try {
-            await Promise.all([fetchStudents(), fetchClasses(), fetchSubjects(), fetchAnalytics()]);
+            await Promise.all([fetchStudents(), fetchClasses(), fetchSubjects(), fetchAnalytics(), fetchAnnouncements()]);
         } finally {
             setLoading(false);
         }
@@ -118,6 +130,38 @@ export default function AdminDashboard() {
             setAnalytics(res.data);
         } catch (err) {
             console.error('Failed to fetch analytics:', err);
+        }
+    };
+
+    const fetchAnnouncements = async () => {
+        try {
+            const res = await api.get('/announcements');
+            setAnnouncements(res.data);
+        } catch (err) {
+            console.error('Failed to fetch announcements:', err);
+        }
+    };
+
+    const handleCreateAnnouncement = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await api.post('/announcements', newAnnouncement);
+            showMessage('success', 'Announcement posted! 📢');
+            setNewAnnouncement({ title: '', message: '' });
+            fetchAnnouncements();
+        } catch (error: any) {
+            showMessage('error', error.response?.data?.message || 'Failed to post announcement');
+        }
+    };
+
+    const handleDeleteAnnouncement = async (id: string) => {
+        if (!confirm('Delete this announcement?')) return;
+        try {
+            await api.delete(`/announcements/${id}`);
+            showMessage('success', 'Announcement deleted');
+            fetchAnnouncements();
+        } catch (error: any) {
+            showMessage('error', error.response?.data?.message || 'Failed to delete announcement');
         }
     };
 
@@ -450,7 +494,7 @@ export default function AdminDashboard() {
                 <h1 className="text-3xl font-bold gradient-text">Admin Dashboard</h1>
 
                 <Tabs defaultValue="users" className="space-y-6">
-                    <TabsList className="glass border-white/10 p-1 rounded-xl w-full grid grid-cols-2 md:grid-cols-4 h-auto">
+                    <TabsList className="glass border-white/10 p-1 rounded-xl w-full grid grid-cols-2 md:grid-cols-5 h-auto">
                         <TabsTrigger value="users" className="gap-2 rounded-lg data-[state=active]:neon-glow py-2">
                             <Users className="h-4 w-4" /> <span className="hidden sm:inline">Users</span>
                         </TabsTrigger>
@@ -462,6 +506,9 @@ export default function AdminDashboard() {
                         </TabsTrigger>
                         <TabsTrigger value="settings" className="gap-2 rounded-lg data-[state=active]:neon-glow py-2">
                             <KeyRound className="h-4 w-4" /> <span className="hidden sm:inline">Settings</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="broadcasts" className="gap-2 rounded-lg data-[state=active]:neon-glow py-2 col-span-2 md:col-span-1">
+                            <Megaphone className="h-4 w-4" /> <span className="hidden sm:inline">Broadcasts</span>
                         </TabsTrigger>
                     </TabsList>
 
@@ -1005,6 +1052,85 @@ export default function AdminDashboard() {
                                 </form>
                             </CardContent>
                         </Card>
+                    </TabsContent>
+                    {/* Announcements Tab */}
+                    <TabsContent value="broadcasts" className="space-y-6">
+                        <div className="grid gap-6 lg:grid-cols-2">
+                            {/* Create Announcement */}
+                            <Card className="glass border-white/10">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Megaphone className="h-5 w-5 text-purple-400" />
+                                        Post Announcement
+                                    </CardTitle>
+                                    <CardDescription>Broadcast a message to all student dashboards.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <form onSubmit={handleCreateAnnouncement} className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label>Title</Label>
+                                            <Input
+                                                value={newAnnouncement.title}
+                                                onChange={(e) => setNewAnnouncement({ ...newAnnouncement, title: e.target.value })}
+                                                placeholder="e.g. Ramadan Mubarak!"
+                                                required
+                                                className="glass border-white/10"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Message</Label>
+                                            <Input
+                                                value={newAnnouncement.message}
+                                                onChange={(e) => setNewAnnouncement({ ...newAnnouncement, message: e.target.value })}
+                                                placeholder="Enter your message..."
+                                                required
+                                                className="glass border-white/10"
+                                            />
+                                        </div>
+                                        <Button type="submit" className="w-full neon-glow">
+                                            Post Broadcast
+                                        </Button>
+                                    </form>
+                                </CardContent>
+                            </Card>
+
+                            {/* Active Announcements List */}
+                            <Card className="glass border-white/10">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Activity className="h-5 w-5 text-cyan-400" />
+                                        Active Broadcasts
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4 max-h-[500px] overflow-y-auto">
+                                        {announcements.length === 0 ? (
+                                            <p className="text-center text-muted-foreground py-8">No active announcements</p>
+                                        ) : (
+                                            announcements.map((announcement) => (
+                                                <div key={announcement.id} className="glass rounded-xl p-4 space-y-2 relative group">
+                                                    <div className="flex justify-between items-start">
+                                                        <h3 className="font-bold">{announcement.title}</h3>
+                                                        <Button
+                                                            size="icon"
+                                                            variant="ghost"
+                                                            className="h-6 w-6 text-red-400 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            onClick={() => handleDeleteAnnouncement(announcement.id)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                    <p className="text-sm text-muted-foreground">{announcement.message}</p>
+                                                    <div className="text-xs text-white/30 pt-2 border-t border-white/5 mt-2">
+                                                        Posted {new Date(announcement.createdAt).toLocaleDateString()}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </TabsContent>
                 </Tabs>
             </main>

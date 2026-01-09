@@ -9,6 +9,7 @@ import { CoursesModule } from './courses/courses.module';
 import { MarksModule } from './marks/marks.module';
 import { ProgressModule } from './progress/progress.module';
 import { ActivityModule } from './activity/activity.module';
+import { AnnouncementsModule } from './announcements/announcements.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ActivityModule } from './activity/activity.module';
     MarksModule,
     ProgressModule,
     ActivityModule,
+    AnnouncementsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
